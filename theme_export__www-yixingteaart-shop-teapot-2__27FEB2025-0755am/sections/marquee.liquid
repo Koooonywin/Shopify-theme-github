@@ -1,0 +1,285 @@
+{% liquid
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<section 
+    id="marquee-{{ section.id }}" 
+    class="marquee overflow-hidden {{ bg_color }} {{ section.settings.separator }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <ul 
+        class="list-unstyled mb-0 {{ section.settings.font_size }} {{ section.settings.text_transform }}"
+        data-animation-duration="{{ section.settings.animation_duration }}"
+        data-marquee-direction="{{ section.settings.marquee_direction }}"
+        data-section-id="{{ section.id }}"
+        aria-label="{{ section.settings.list_label }}">
+        {% for block in section.blocks %}
+            <li class="px-{{ section.settings.gap }}" {{ block.shopify_attributes }}>
+                {% unless block.settings.url == blank %}
+                    <a href="{{ block.settings.url }}">
+                {% endunless %}
+                {% if block.type == 'image' %}
+                    <img
+                        class="img-fluid"
+                        src="{{ block.settings.img.src | image_url: width: block.settings.img_width }}"
+                        alt="{{ block.settings.img.alt | escape }}"
+                        width="{{ block.settings.img_width }}"
+                        height="{{ block.settings.img_width | divided_by: block.settings.img.aspect_ratio | round }}"
+                        loading="lazy">
+                {% else %}
+                    {{ block.settings.text }}
+                {% endif %}
+                {% unless block.settings.url == blank %}
+                    </a>
+                {% endunless %}
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+
+{% schema %}
+{
+    "name": "Marquee",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "font_size",
+            "label": "Font size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "text_transform",
+            "label": "Text transform",
+            "default": "text-capitalize",
+            "options": [
+                { "value": "", "label": "Normal" },
+                { "value": "text-capitalize", "label": "Capitalize" },
+                { "value": "text-lowercase", "label": "Lowercase" },
+                { "value": "text-uppercase", "label": "Uppercase" }
+
+            ]
+        },
+        {
+            "type": "text",
+            "id": "list_label",
+            "label": "List label",
+            "default": "Promotional Features",
+            "info": "Used for accessibility purposes"
+        },
+        {
+            "type": "header",
+            "content": "Effect"
+        },
+        {
+            "type": "range",
+            "id": "animation_duration",
+            "label": "Animation duration",
+            "min": 0,
+            "max": 60,
+            "step": 1,
+            "default": 20,
+            "unit": "sec"
+        },
+        {
+            "type": "select",
+            "id": "marquee_direction",
+            "label": "Marquee direction",
+            "default": "left",
+            "options": [
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+
+            ]
+        },
+        {
+            "type": "select",
+            "id": "separator",
+            "label": "Separator",
+            "default": "separator-dot",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "separator-dot", "label": "Dot" }
+
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Gap",
+            "info": "Spacing between items."
+        },
+        {
+            "type": "range",
+            "id": "gap",
+            "label": "Gap",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 6
+        },
+        {
+            "type": "header",
+            "content": "Spacing",
+            "info": "Based on Bootstrap spacing utility classes [Learn more](https://getbootstrap.com/docs/5.0/utilities/spacing/)"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 4
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 4
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "item",
+            "name": "Text",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "text",
+                    "label": "Text"
+                },
+                {
+                    "type": "url",
+                    "id": "url",
+                    "label": "URL"
+                }
+            ]
+        },
+        {
+            "type": "image",
+            "name": "Image",
+            "settings": [
+                {
+                    "type": "image_picker",
+                    "id": "img",
+                    "label": "Image"
+                },
+                {
+                    "type": "text",
+                    "id": "img_width",
+                    "label": "Image width (px)",
+                    "default": "120"
+                },
+                {
+                    "type": "url",
+                    "id": "url",
+                    "label": "URL"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Marquee",
+            "category": "General",
+            "blocks": [
+                {
+                    "type": "item",
+                    "settings": {
+                        "text": "A Promotional Message"
+                    }
+                },
+                {
+                    "type": "item",
+                    "settings": {
+                        "text": "Yet Another Promo Message"
+                    }
+                },
+                {
+                    "type": "item",
+                    "settings": {
+                        "text": "Try To Keep It Short"
+                    }
+                },
+                {
+                    "type": "item",
+                    "settings": {
+                        "text": "4-7 Messages Works Best"
+                    }
+                },
+                {
+                    "type": "item",
+                    "settings": {
+                        "text": "Adjust section settings as Neeeded"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

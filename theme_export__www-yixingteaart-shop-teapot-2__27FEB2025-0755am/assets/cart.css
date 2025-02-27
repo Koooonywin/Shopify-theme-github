@@ -1,0 +1,109 @@
+/*
+    © 2023 EcomGraduates.com
+    https://www.ecomgraduates.com
+*/
+
+/*
+    Cart icon (badge)
+*/
+.cart-icon {
+    position: relative;
+}
+
+.cart-icon .badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+}
+
+
+/*
+    Cart page
+*/
+#cart {
+    transition: all .2s ease-out;   
+}
+
+#cart.loading {
+    opacity: .25;
+}
+
+
+/*
+    Offcanvas cart
+*/
+#offcanvas-cart .offcanvas-body {
+    transition: all .2s ease-out;
+}
+
+#offcanvas-cart.loading .offcanvas-body {
+    opacity: .25;
+}
+
+#offcanvas-cart .product-item-price {
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+#offcanvas-cart .quantity-wrapper {
+    max-width: 100px;
+}
+
+#offcanvas-cart .quantity-wrapper .form-control {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+
+#offcanvas-cart .btn[data-remove-line-item] {
+    display: flex;
+    color: var(--bs-body-color);
+    opacity: .75;
+    border: none;
+}
+
+#offcanvas-cart .btn[data-remove-line-item]:hover,
+#offcanvas-cart .btn[data-remove-line-item]:focus {
+    opacity: 1;
+}
+
+#offcanvas-cart .btn[data-remove-line-item]:focus-visible {
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb),.25);
+}
+
+#offcanvas-cart .payment-icons svg {
+    width: auto;
+    max-height: 20px;
+}
+
+#offcanvas-cart-empty {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+#offcanvas-cart-empty svg {
+    animation: offcanvas-cart-empty-svg-animation 1s linear infinite alternate;
+}
+
+@keyframes offcanvas-cart-empty-svg-animation {
+    from {
+        transform: translateX(-.5rem);
+    }
+    to {
+        transform: translateX(.5rem);
+    }
+}
+
+
+/*
+    Cart goal
+*/
+#cart-goal {}

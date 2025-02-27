@@ -1,0 +1,167 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<section 
+    id="page-content-{{ section.id }}"
+    class="page-content {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div 
+        class="container {{ section.settings.text_align }}" 
+        style="max-width: {{ section.settings.max_width }}px;">
+        {% if section.settings.show_title %}
+            <h1 class="title {{ section.settings.title_size }}">
+                {{ page.title }}
+            </h1>
+        {% endif %}
+        {% unless page.content == blank %}
+            <div class="description rte {{ section.settings.description_size }}">
+                {{ page.content }}
+            </div>
+        {% endunless %}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Page content",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Page max-width (px)",
+            "info": "Prevent the container from growing to large",
+            "default": "768"
+        },
+        {
+            "type": "select",
+            "id": "text_align",
+            "label": "Text align",
+            "default": "text-center",
+            "options": [
+                { "value": "text-left", "label": "Left" },
+                { "value": "text-center", "label": "Center" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "show_title",
+            "label": "Show page title",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title size",
+            "default": "h1",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing",
+            "info": "Based on Bootstrap spacing utility classes [Learn more](https://getbootstrap.com/docs/5.0/utilities/spacing/)"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 12,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "templates": ["page"],
+    "presets": [
+        {
+            "name": "Page content",
+            "category": "Pages"
+        }
+    ]
+}
+{% endschema %}

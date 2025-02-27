@@ -1,0 +1,350 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign product = section.settings.product
+%}
+
+<section 
+    id="single-product-{{ section.id }}" 
+    class="single-product product-content enter-view overflow-hidden {{ section.settings.bg_color }} {{ section.settings.text_align }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{{ section.settings.container }}">
+        <div class="mx-auto" style="max-width: {{ section.settings.max_width }}px;">
+            <div class="row align-items-center {{ section.settings.img_align_desktop }}">
+                <div class="col-lg-6 mb-6 mb-lg-0">
+                    {% if product == blank %}
+                        {{ 'product-1' | placeholder_svg_tag: 'product-item-img bg-light mb-4' }}
+                    {% else %}
+                        {% render 'product-gallery', product: product %}
+                    {% endif %}
+                </div>
+                <div class="col-lg-6">
+                    {% if product == blank %}
+                        <h2 class="title mb-3 {{ section.settings.title_size }}">
+                            {{ 'Product Title' }}
+                        </h2>
+                        <p class="product-price fs-4 mb-5">
+                            <span class="product-price-final">
+                                {{ 25000 | money }}
+                            </span>
+                        </p>
+                        <div class="description rte mb-7 {{ section.settings.description_size }}">
+                            {{ section.settings.description }}
+                        </div>
+                    {% else %}
+                        {% if section.settings.show_vendor and product.vendor %}
+                            <p class="product-vendor text-muted my-1 text-uppercase">
+                                {{ product.vendor }}
+                            </p>
+                        {% endif %}
+
+                        <h2 class="title mb-3 {{ section.settings.title_size }}">
+                            {{ product.title | default: 'Product Title' }}
+                        </h2>
+                        {% render 'product-rating-badge', product: product %}
+                        
+                        {% if product.metafields.descriptors.subtitle %}
+                            <p class="subtitle text-muted mb-4">
+                                {{ product.metafields.descriptors.subtitle }}
+                            </p>
+                        {% endif %}
+
+                        <p class="product-price fs-4 mb-5">
+                            {% if product.first_available_variant.compare_at_price > product.first_available_variant.price %}
+                                <span class="product-price-compare text-muted me-3">
+                                    <span class="visually-hidden">
+                                        {{ 'product.price_regular' | t }} &nbsp;
+                                    </span>
+                                    <s>{{ product.first_available_variant.compare_at_price | money }}</s>
+                                </span>
+                                <span class="product-price-final">
+                                    <span class="visually-hidden">
+                                        {{ 'product.price_sale' | t }} &nbsp;
+                                    </span>
+                                    {{ product.first_available_variant.price | money }}
+                                </span>
+                            {% else %}
+                                <span class="product-price-final">
+                                    {{ product.first_available_variant.price | money }}
+                                </span>
+                            {% endif %}
+                            {% if product.first_available_variant.available and product.first_available_variant.compare_at_price > product.first_available_variant.price %}
+                                <span class="price-badge-sale badge">
+                                    {{ 'product.save' | t }} {{ product.first_available_variant.compare_at_price | minus: product.first_available_variant.price | times: 100 | divided_by: product.first_available_variant.compare_at_price | round | append: '%' }}
+                                </span>    
+                            {% endif %}
+                            {% unless product.first_available_variant.available %}
+                                <span class="price-badge-sold-out badge">
+                                    {{ 'product.sold_out' | t }}
+                                </span>        
+                            {% endunless %}
+                        </p>
+
+                        {% render 'product-form', product: product %}
+
+                        {% unless section.settings.description == blank %}
+                            <div class="description rte mb-7 {{ section.settings.description_size }}">
+                                {{ section.settings.description }}
+                            </div>
+                        {% endunless %}
+
+                        {% unless section.settings.btn_text == blank %}
+                            <a 
+                                class="btn {{ section.settings.btn_color }} {{ section.settings.btn_size }}"
+                                href="{{ product.url }}">
+                                {{ section.settings.btn_text }}
+                            </a>
+                        {% endunless %}
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Single Product",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max-width (px)"
+        },
+        {
+            "type": "select",
+            "id": "text_align",
+            "label": "Text align",
+            "default": "text-start",
+            "options": [
+                { "value": "text-start", "label": "Left" },
+                { "value": "text-center", "label": "Center" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Product"
+        },
+        {
+            "type": "product",
+            "id": "product",
+            "label": "Product"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_vendor",
+            "label": "Show vendor",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title size",
+            "default": "h2",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Gallery"
+        },
+        {
+            "type": "select",
+            "id": "gallery_img_orientation",
+            "label": "Image orientation",
+            "default": "square",
+            "options": [
+                { "value": "square", "label": "Square" },
+                { "value": "landscape", "label": "Landscape" },
+                { "value": "potrait", "label": "Potrait" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "gallery_img_thumbnail",
+            "label": "Image thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "gallery_show_thumbnails_mobile",
+            "label": "Show thumb images on mobile",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Form"
+        },
+        {
+            "type": "checkbox",
+            "id": "form_light_bg",
+            "label": "Light bg color",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "form_show_qty_field",
+            "label": "Show quantity field",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "form_show_buy_btn",
+            "label": "Show Buy button",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Button"
+        },
+        {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Button text",
+            "default": "Learn more",
+            "info": "Leave empty to disable"
+        },
+        {
+            "type": "select",
+            "id": "btn_color",
+            "label": "Button color",
+            "default": "btn-outline-primary",
+            "options": [
+                { "group": "Normal", "value": "btn-link", "label": "Link" },
+                { "group": "Normal", "value": "btn-light", "label": "Light" },
+                { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                { "group": "Normal", "value": "btn-success", "label": "Success" },
+                { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                { "group": "Normal", "value": "btn-info", "label": "Info" },
+                { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "btn_size",
+            "label": "Button size",
+            "default": "btn-md",
+            "options": [
+                { "value": "btn-sm", "label": "Small" },
+                { "value": "btn-md", "label": "Normal" },
+                { "value": "btn-lg", "label": "Large" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "Single Product",
+            "category": "Product"
+        }
+    ]
+}
+{% endschema %}

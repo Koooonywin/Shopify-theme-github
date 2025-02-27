@@ -1,0 +1,197 @@
+{% liquid
+    case settings.offcanvas_img_orientation
+        when 'square'
+            assign img_width  = 600
+            assign img_height = 600
+        when 'landscape'
+            assign img_width  = 600
+            assign img_height = 480
+        when 'potrait'
+            assign img_width  = 480
+            assign img_height = 600
+    endcase
+%}
+
+<div 
+    id="offcanvas-search" 
+    class="offcanvas offcanvas-end offcanvas-mobile-full {{ settings.offcanvas_opening_direction }}" 
+    tabindex="-1" 
+    aria-labelledby="offcanvas-search-label">
+    <div class="offcanvas-header {{ settings.offcanvas_header_bg }}">
+        <h2 
+            id="offcanvas-search-label" 
+            class="offcanvas-title {{ settings.offcanvas_header_title_size }}">
+            {{ 'general.offcanvas_search.title' | t }}
+        </h2>
+        <button 
+            class="btn-close {% if settings.offcanvas_header_bg contains 'text-white' %}btn-close-white{% endif %}" 
+            type="button" 
+            data-bs-dismiss="offcanvas" 
+            aria-label="{{ 'general.accessibility.close' | t }}">
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <predictive-search>
+            <form 
+                action="{{ routes.search_url }}" method="get" role="search">
+                <div class="form-control-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        class="form-control"
+                        type="search"
+                        name="q"
+                        value="{{ search.terms | escape }}"
+                        aria-describedby="predictive-search-alert"
+                        aria-label="{{ 'general.offcanvas_search.input_label' | t }}"
+                        placeholder="{{ 'general.offcanvas_search.input_label' | t }}"
+                        data-search-collections="{{ settings.search_collections }}"
+                        data-search-pages="{{ settings.search_pages }}"
+                        data-search-articles="{{ settings.search_articles }}">
+                    {% if settings.search_speech %}
+                        <button 
+                            class="btn btn-search-by-voice" 
+                            type="button" 
+                            aria-label="{{ 'general.offcanvas_search.search_by_voice' | t }}"
+                            title="{{ 'general.offcanvas_search.search_by_voice' | t }}"
+                            data-lang="en-US"
+                            data-bs-toggle="tooltip"
+                            data-bs-trigger="hover"
+                            data-bs-placement="bottom">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2c-1.7 0-3 1.2-3 2.6v6.8c0 1.4 1.3 2.6 3 2.6s3-1.2 3-2.6V4.6C15 3.2 13.7 2 12 2z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18.4v3.3M8 22h8"/>
+                            </svg>
+                        </button>
+                    {% endif %}
+                </div>
+                <input type="hidden" name="type" value="product">
+            </form>
+            <p 
+                id="predictive-search-alert" 
+                class="visually-hidden" 
+                role="status"
+                data-text-result-found="{{ 'general.offcanvas_search.result_found' | t }}"
+                data-text-results-found="{{ 'general.offcanvas_search.results_found' | t }}"
+                data-text-no-results="{{ 'general.offcanvas_search.no_results' | t }}">
+            </p>
+            <div id="predictive-search" tabindex="-1"></div>
+        </predictive-search>
+        {% if settings.search_show_popular_products %}
+            <div id="search-popular-products-wrapper" class="mt-6">
+                <h3 
+                    id="search-popular-products-label" 
+                    class="predictive-search-results-title h6 mb-4">
+                    {{ 'general.offcanvas_search.title_popular_products' | t }}
+                </h3>
+                <ul 
+                    id="search-popular-products" 
+                    class="product-list list-unstyled"
+                    aria-labelledby="search-popular-products-label">
+                    {% for product in settings.search_popular_products %}
+                        <li class="product-item py-3">
+                            <div class="row align-items-center mx-n3">
+                                <div class="col-4 px-3">
+                                    <a href="{{ product.url }}" class="">
+                                        <img 
+                                            class="product-item-img img-fluid me-3 rounded {{ settings.offcanvas_img_thumbnail }}"
+                                            src="{{ product.featured_image | image_url: width: img_width, height: img_height, crop: 'center' }}"
+                                            alt="{{ product.featured_image.alt }}"
+                                            width="{{ img_width }}"
+                                            height="{{ img_height }}"
+                                            loading="lazy">
+                                    </a>
+                                </div>
+                                <div class="col-8 px-3">
+                                    <h4 class="product-item-title h6 mb-1 {{ settings.search_title_truncate }}">
+                                        <a href="{{ product.url }}" class="link-dark">
+                                            {{ product.title }}
+                                        </a>
+                                    </h4>
+                                    {% render 'product-rating-badge', product: product %}
+                                    <p class="product-item-price small mb-3">
+                                        {% if product.first_available_variant.compare_at_price > product.price %}
+                                            <span class="product-item-price-compare text-muted me-1">
+                                                <span class="visually-hidden">
+                                                    {{ 'product.price_regular' | t }} &nbsp;
+                                                </span>
+                                                <s>
+                                                    {{ product.first_available_variant.compare_at_price | money }}
+                                                </s>
+                                            </span>
+                                            <span class="product-item-price-final">
+                                                <span class="visually-hidden">
+                                                    {{ 'product.price_sale' | t }} &nbsp;
+                                                </span>
+                                                {{ product.first_available_variant.price | money }}
+                                            </span>
+                                        {% else %}
+                                            <span class="product-item-price-final">
+                                                {{ product.first_available_variant.price | money }}
+                                            </span>
+                                        {% endif %}
+                                    </p>
+                                    {% if settings.search_show_atc_form %}
+                                        <div class="form-wrapper">
+                                            {% form 'product', product, onsubmit: 'onSubmitAtcForm(this, event)' %}
+                                                <div class="d-flex">
+                                                {% if product.has_only_default_variant %}
+                                                    <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+                                                {% else %}
+                                                    <select 
+                                                        class="form-select form-select-sm w-100 me-3" 
+                                                        name="id" 
+                                                        aria-label="{{ 'product.select_variant' | t }}"
+                                                        onchange="onChangeProductItemVariant(this, event)">
+                                                        {% for variant in product.variants %}
+                                                            <option 
+                                                                value="{{ variant.id }}"
+                                                                data-compare-at-price="{{ variant.compare_at_price }}"
+                                                                data-price="{{ variant.price }}"
+                                                                {% if variant.image %}
+                                                                    data-variant-image="{{ variant.image | image_url: width: img_width, height: img_height, crop: 'center' }}"
+                                                                {% endif %}
+                                                                >
+                                                                {{ variant.title }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                {% endif %}
+                                                <button
+                                                class="btn-atc btn btn-sm btn-primary px-4 flex-shrink-0" 
+                                                    type="submit"
+                                                    name="add"
+                                                    data-text-add-to-cart="{{ 'product.add' | t }}"
+                                                    {% unless product.available %}
+                                                        disabled
+                                                    {% endunless %}>
+                                                    {% if product.available %}
+                                                        {{ 'product.add' | t }}
+                                                    {% else %}
+                                                        {{ 'product.sold_out' | t }}
+                                                    {% endif %}
+                                                </button>
+                                            {% endform %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    <div class="offcanvas-footer border-top p-5" hidden>
+        <form action="{{ routes.search_url }}" method="get" role="search">
+            <input type="hidden" name="q" value="">
+            <input type="hidden" name="type" value="product">
+            <button 
+                class="btn btn-outline-primary w-100" 
+                data-text-search-for="{{ 'general.offcanvas_search.search_for' | t }}"
+                tabindex="-1">
+            </button>
+        </form>
+    </div>
+</div>

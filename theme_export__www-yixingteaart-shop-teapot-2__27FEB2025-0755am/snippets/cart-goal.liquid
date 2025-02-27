@@ -1,0 +1,32 @@
+{% if settings.cart_goal_enable and cart.item_count > 0 %}
+    {% liquid
+        assign goal_value_with_cents = settings.cart_goal_value | times: 100
+
+        if cart.total_price < goal_value_with_cents
+            assign percentage = cart.total_price | divided_by: settings.cart_goal_value
+            assign goal_remaining_money = goal_value_with_cents | minus: cart.total_price | money
+            assign desc = settings.cart_goal_description_before | replace: '[amount]', goal_remaining_money
+            assign bg_color =  settings.cart_goal_bg_color_before
+        else
+            assign percentage = 100
+            assign desc = settings.cart_goal_description_after
+            assign bg_color =  settings.cart_goal_bg_color_after
+        endif
+    %}
+    <div id="cart-goal" class="text-center mb-5">
+        <div class="rte small mb-2 {{ color | prepend: 'text-' }}">
+            {{ desc }}
+        </div>
+        <div class="progress" style="height: .5rem;">
+            <div 
+                class="progress-bar progress-bar progress-bar-animated progress-bar-striped {{ bg_color }}" 
+                role="progressbar" 
+                aria-valuenow="{{ cart.total_price | money }}" 
+                aria-valuemin="0"
+                aria-valuemax="{{ goal_value_with_cents | money }}"
+                data-width="{{ percentage }}%"
+                style="width: 0%;">
+            </div>
+        </div>
+    </div>
+{% endif %}

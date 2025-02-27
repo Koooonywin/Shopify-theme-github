@@ -1,0 +1,185 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+
+    assign class = 'rounded ' | append: section.settings.video_bg_color
+%}
+
+<section 
+    id="mp4-video-{{ section.id }}" 
+    class="mp4-video {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{{ section.settings.container }}">
+        <div class="mx-auto" style="max-width: {{ section.settings.max_width }}px">
+            <div class="ratio {{ section.settings.ratio }}">
+                {{ section.settings.video | video_tag: class: class, image_size: '1200x', autoplay: section.settings.autoplay, loop: section.settings.loop, muted: section.settings.muted, controls: section.settings.controls }}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "MP4 Video",
+    "settings": [
+        {
+            "type": "video",
+            "id": "video",
+            "label": "Video"
+        },
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max width (px)",
+            "info": "Adjust container width (in pixels)",
+            "default": "960"
+        },
+        {
+            "type": "header",
+            "content": "Video"
+        },
+        {
+            "type": "select",
+            "id": "ratio",
+            "label": "Aspect ratio",
+            "default": "ratio-16x9",
+            "options": [
+                { "group": "Square", "value": "ratio-1x1", "label": "1x1" },
+                { "group": "Horizontal", "value": "ratio-4x3", "label": "4x3" },
+                { "group": "Horizontal", "value": "ratio-16x9", "label": "16x9" },
+                { "group": "Horizontal", "value": "ratio-21x9", "label": "21x9" },
+                { "group": "Vertical", "value": "ratio-3x4", "label": "3x4" },
+                { "group": "Vertical", "value": "ratio-9x16", "label": "9x16" },
+                { "group": "Vertical", "value": "ratio-9x21", "label": "9x21" }
+            ] 
+        },
+        {
+            "type": "select",
+            "id": "video_bg_color",
+            "label": "Video bg color",
+            "default": "bg-black",
+            "options": [
+                { "value": "bg-transparent", "label": "Transparent" },
+                { "value": "bg-white", "label": "White" },
+                { "value": "bg-black", "label": "Black" }
+            ] 
+        },
+        {
+            "type": "checkbox",
+            "id": "autoplay",
+            "label": "Autoplay",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "loop",
+            "label": "Loop",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "muted",
+            "label": "Muted",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "controls",
+            "label": "Controls",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "MP4 Video",
+            "category": "Media"
+        }
+    ]
+}
+{% endschema %}

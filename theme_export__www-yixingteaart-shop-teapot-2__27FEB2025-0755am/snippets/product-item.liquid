@@ -1,0 +1,270 @@
+{% liquid
+    case section.settings.product_img_orientation
+        when 'square'
+            assign img_width  = 600
+            assign img_height = 600
+        when 'landscape'
+            assign img_width  = 600
+            assign img_height = 480
+        when 'potrait'
+            assign img_width  = 480
+            assign img_height = 600
+    endcase
+%}
+
+<li class="product-item splide__slide p-3 p-lg-4 mb-4">
+    <a  
+        class="product-link position-relative d-block link-dark" 
+        href="{{ product.url | within: collection }}">
+        {% unless product.metafields.ecomify.custom_badge == blank %}
+            <span 
+                class="img-badge-custom badge" 
+                style="background: {{ product.metafields.ecomify.custom_badge | split: ':' | last }};">
+                {{ product.metafields.ecomify.custom_badge | split: ':' | first }}
+            </span>
+        {% endunless %}  
+        {% if section.settings.product_show_sale_badge and product.available and product.compare_at_price > product.price %}
+            <span class="img-badge-sale badge {{ section.settings.product_sale_badge_color }}">
+                {{ 'product.save' | t }} {{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round | append: '%' }}
+            </span>    
+        {% endif %}
+        {% unless product.available %}
+            <span class="img-badge-sold-out badge">
+                {{ 'product.sold_out' | t }}
+            </span>        
+        {% endunless %}
+        {% if section.settings.product_img_mode == 'gallery' %}
+            <div 
+                id="product-carousel-{{ section.id }}-{{ product.id }}" 
+                class="product-carousel carousel slide mb-4" 
+                data-bs-interval="false"
+                data-bs-touch="false">
+                <div class="carousel-inner">
+                    {% for image in product.images limit: 5 %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img
+                                class="product-item-img img-fluid rounded {{ section.settings.product_img_thumbnail }}"
+                                src="{{ image.src | image_url: width: img_width, height: img_height, crop: 'center' }}"
+                                alt="{{ image.alt | escape }}"
+                                width="{{ img_width }}"
+                                height="{{ img_height }}"
+                                loading="lazy">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if product.images.size > 1 %}
+                    <div class="carousel-controls">
+                        <button 
+                            class="carousel-control carousel-control-prev" 
+                            type="button" 
+                            data-bs-target="#product-carousel-{{ section.id }}-{{ product.id }}" 
+                            data-bs-slide="prev" 
+                            aria-label="{{ 'general.accessibility.previous' | t }}">
+                            <span class="carousel-control-icon carousel-control-prev-icon"></span>
+                        </button>
+                        <button 
+                            class="carousel-control carousel-control-next" 
+                            type="button" 
+                            data-bs-target="#product-carousel-{{ section.id }}-{{ product.id }}" 
+                            data-bs-slide="next" 
+                            aria-label="{{ 'general.accessibility.next' | t }}">
+                            <span class="carousel-control-icon carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% elsif section.settings.product_img_mode == 'hover' %}
+            <img 
+                class="product-item-img img-fluid mb-4 rounded {{ section.settings.product_img_thumbnail }}"
+                src="{{ product.featured_image.src | image_url: width: img_width, height: img_height, crop: 'center' }}" 
+                alt="{{ product.featured_image.alt | escape }}"
+                width="{{ img_width }}"
+                height="{{ img_height }}"
+                loading="lazy">
+            {% if product.images.size > 1 %}
+                <img 
+                    class="product-item-img product-item-img-hover img-fluid mb-4 rounded {{ section.settings.product_img_thumbnail }}"
+                    src="{{ product.images[1].src | image_url: width: img_width, height: img_height, crop: 'center' }}" 
+                    alt="{{ product.images[1].alt | escape }}"
+                    width="{{ img_width }}"
+                    height="{{ img_height }}"
+                    loading="lazy">
+            {% endif %}
+        {% else %}
+            <img 
+                class="product-item-img img-fluid mb-4 rounded {{ section.settings.product_img_thumbnail }}"
+                src="{{ product.featured_image.src | image_url: width: img_width, height: img_height, crop: 'center' }}" 
+                alt="{{ product.featured_image.alt | escape }}"
+                width="{{ img_width }}"
+                height="{{ img_height }}"
+                loading="lazy">
+        {% endif %}
+        <h3 class="product-item-title mb-2 {{ section.settings.product_title_size }} {{ section.settings.product_title_truncate }}">
+            {{ product.title }}
+        </h3>
+    </a>
+    {% render 'product-rating-badge', product: product %}
+    <p class="product-item-price mb-4">
+        {% if product.compare_at_price > product.price %}
+            <span class="product-item-price-compare text-muted me-1">
+                <span class="visually-hidden">
+                    {{ 'product.price_regular' | t }} &nbsp;
+                </span>
+                <s>{{ product.compare_at_price | money }}</s>
+            </span>
+            <span class="product-item-price-final">
+                <span class="visually-hidden">
+                    {{ 'product.price_sale' | t }} &nbsp;
+                </span>
+                {% if product.price_varies %}
+                    {{ 'product.price_from' | t }}
+                {% endif %}
+                {{ product.price | money }}
+            </span>
+        {% else %}
+            <span class="product-item-price-final">
+                {% if product.price_varies %}
+                    {{ 'product.price_from' | t }}
+                {% endif %}
+                {{ product.price | money }}
+            </span>
+        {% endif %}
+    </p>
+    {% if settings.color_swatches_show %}
+        {% liquid
+            for option in product.options_with_values
+                if settings.color_swatches_names contains option.name
+                    assign swatches = option.values
+                endif
+            endfor
+        %}
+        {% if swatches == nil %}
+            <div style="height: 28px" class="mb-5"></div>
+        {% else %}            
+            <ul
+                class="color-swatches list-unstyled mx-0 mb-5" 
+                aria-label="{{ 'product.color_options' | t }}">
+                {% for value in swatches %}
+                    {% liquid
+                        assign variants = product.variants | reverse
+                        for variant in variants
+                            if variant.title contains value
+                                assign variant_found = variant
+                            endif
+                        endfor
+                    %}
+                    <li class="p-1" {% if forloop.index > 4 %}hidden{% endif %}>
+                        <a
+                            href="{{ product.url }}?variant={{ variant_found.id }}"
+                            class=""
+                            data-bs-toggle="popover" 
+                            title="{{ value }}" 
+                            data-bs-content="<img class='img-fluid' src='{{ variant_found.image | image_url: width: img_width, height: img_height, crop: 'center' }}' width='{{ img_width }}' height='{{ img_height }}' loading='lazy' />" 
+                            data-bs-placement="top"
+                            data-bs-trigger="hover"
+                            data-bs-html="true"
+                            data-bs-custom-class="popover-color-swatch">
+                            {% if settings.color_swatches_use_variant_images %}
+                                <img
+                                    class="img-fluid swatch-variant-image"
+                                    src="{{ variant_found.image | image_url: width: 80, height: 80, crop: 'center' }}"
+                                    alt=" {{ value | escape }}"
+                                    width="40"
+                                    height="40"
+                                    loading="lazy"
+                                    aria-hidden="true">
+                            {% else %}
+                                {% assign swatch_img = value | handleize | prepend: 'swatch-' | append: '.png' %}
+                                <img
+                                    class="img-fluid swatch-custom-image"
+                                    src="{{ swatch_img | image_url: width: 80, height: 80, crop: 'center' }}"
+                                    alt=" {{ value | escape }}"
+                                    width="40"
+                                    height="40"
+                                    loading="lazy"
+                                    aria-hidden="true">
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+                {% if swatches.size > 4 %}
+                    <li class="p-0">
+                        <button
+                            class="btn btn-view-more" 
+                            type="button" 
+                            onclick="showAllSwatchesWithinProductItem(this, event)"
+                            aria-label="+{{ swatches.size | minus: 4 }} {{ 'general.accessibility.product_options' | t }}">
+                            +{{ swatches.size | minus: 4 }}
+                        </button>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endif %}
+    {% if section.settings.product_show_atc_form %}
+        <div class="mb-2">
+            {% form 'product', product, onsubmit: 'onSubmitAtcForm(this, event)' %}
+                <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+                {% if product.available == false %}
+                    <button class="btn-atc btn w-100 btn-primary" disabled>
+                        {{ 'product.sold_out' | t }}
+                    </button>
+                {% elsif product.has_only_default_variant %}
+                    <button
+                        class="btn-atc btn btn-md w-100 btn-primary"
+                        type="submit"
+                        name="add"
+                        data-text-add-to-cart="{{ 'product.add_to_cart' | t }}">
+                        {{ 'product.add_to_cart' | t }}
+                    </button>
+                {% else %}
+                    <div class="btn-group w-100 dropup">
+                        <button 
+                            type="button" 
+                            class="btn-atc btn btn-md dropdown-toggle btn-primary" 
+                            data-bs-toggle="dropdown" 
+                            data-text-add-to-cart="{{ 'product.add_to_cart' | t }}"
+                            aria-expanded="false">
+                            {{ 'product.add_to_cart' | t }}
+                        </button>
+                            <ul class="dropdown-menu shadow w-100">
+                                {% for variant in product.variants %}
+                                    <li class="{{ variant.inventory_policy }}">
+                                        <button
+                                            class="dropdown-item" 
+                                            onclick="onClickAtcFormVariant(this, event)"
+                                            data-variant-id="{{ variant.id }}"
+                                            type="button"
+                                            {% unless variant.available %}disabled{% endunless %}>
+                                            <div class="d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center lh-sm">
+                                                <span class="small">
+                                                    {{ variant.title }}
+                                                </span>
+                                                {% if section.settings.product_form_show_inventory %}
+                                                    {% if variant.available %}
+                                                        {% if variant.inventory_quantity <= 0 or variant.inventory_quantity >= 10 %}
+                                                            <small class="text-success">
+                                                                {{ 'product.in_stock' | t }}
+                                                            </small>
+                                                        {% else %}
+                                                            <small class="text-danger">
+                                                                {{ 'product.stock_count' | t: count: variant.inventory_quantity }}
+                                                            </small>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <small class="">
+                                                            {{ 'product.sold_out' | t }}
+                                                        </small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                {% endif %}
+            {% endform %}
+        </div>
+    {% endif %}
+</li>

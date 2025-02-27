@@ -1,0 +1,42 @@
+{% assign block = section.blocks | where: 'type', 'trust_badges' | first %}
+
+{% if block %}
+    {% liquid 
+        if block.settings.icon_1
+            assign icons = block.settings.icon_1 | append: ','
+            assign text = block.settings.text_1 | append: ','
+        endif
+        if block.settings.icon_2
+            assign icons = block.settings.icon_2 | append: ',' | prepend: icons
+            assign text = block.settings.text_2 | append: ',' | prepend: text
+        endif
+        if block.settings.icon_3
+            assign icons = block.settings.icon_3 | append: ',' | prepend: icons
+            assign text = block.settings.text_3 | append: ',' | prepend: text
+        endif
+        if block.settings.icon_4
+            assign icons = block.settings.icon_4 | append: ',' | prepend: icons
+            assign text = block.settings.text_4 | append: ',' | prepend: text
+        endif
+
+        assign icons = icons | split: ','
+        assign text = text | split: ','
+    %}
+    <div 
+        class="mx-auto" 
+        style="max-width: {{ block.settings.max_width }}px;">
+        <ul 
+            id="pdp-trust-badges"
+            class="list-unstyled row justify-content-center text-center small lh-sm mx-n4 mt-n3 mb-5"
+            aria-label="{{ block.settings.label }}">
+            {% for icon in icons %}
+                <li class="p-4 {{ block.settings.col_size }}">
+                    <div class="mb-3">
+                        {{ icon }}
+                    </div>
+                    {{ text[forloop.index0] }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

@@ -1,0 +1,414 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+%}
+
+<section 
+    id="parallax-image-{{ section.id }}" 
+    class="parallax-image bg-dark enter-view {{ mt }} {{ mb }}"
+    data-vendor-script="{{ 'vendor-simpleParallax.min.js' | asset_url }}">
+    <div class="img-wrapper">
+        <img
+            class="img-mobile d-lg-none"
+            src="{{ section.settings.img_mobile.src | image_url: width: 960 }}"
+            alt="{{ section.settings.img_mobile.alt | escape }}"
+            width="960"
+            height="{{ 960 | divided_by: section.settings.img_mobile.aspect_ratio | round }}"
+            loading="lazy"
+            data-orientation="{{ section.settings.img_mobile_orientation }}"
+            data-scale="{{ section.settings.img_mobile_scale }}"
+            style="opacity: {{ section.settings.img_mobile_opacity }};">
+        <img
+            class="img-desktop d-none d-lg-block"
+            src="{{ section.settings.img_desktop.src | image_url: width: 1920 }}"
+            alt="{{ section.settings.img_desktop.alt | escape }}"
+            width="1920"
+            height="{{ 1920 | divided_by: section.settings.img_desktop.aspect_ratio | round }}"
+            loading="lazy"
+            style="opacity: {{ section.settings.img_desktop_opacity }};"
+            data-orientation="{{ section.settings.img_desktop_orientation }}"
+            data-scale="{{ section.settings.img_desktop_scale }}">
+        {% if section.settings.img_mobile_blur > 0 or section.settings.img_desktop_blur %}
+            <div class="parallax-image-blur d-lg-none" style="-webkit-backdrop-filter: blur({{ section.settings.img_mobile_blur }}px); backdrop-filter: blur({{ section.settings.img_mobile_blur }}px);">
+            </div>
+            <div class="parallax-image-blur d-none d-lg-block" style="-webkit-backdrop-filter: blur({{ section.settings.img_desktop_blur }}px); backdrop-filter: blur({{ section.settings.img_desktop_blur }}px);">
+            </div>
+        {% endif %}
+    </div>
+    <div class="container">
+        <div 
+            class="parallax-image-inner mx-auto {{ pt }} {{ pb }}" 
+            style="max-width: {{ section.settings.max_width }}px;">
+            {% unless section.settings.subtitle == blank %}
+                <div 
+                    class="{% unless section.settings.animation == '' %}animate__animated opacity-0 {{ section.settings.animation_speed }}{% endunless %}"
+                    data-animate-class="{{ section.settings.animation }}"
+                    style="animation-delay: 400ms;">
+                    <div class="subtitle text-uppercase fw-500 mb-3 {{ section.settings.subtitle_size }}">
+                        {{ section.settings.subtitle }}
+                    </div>
+                </div>
+            {% endunless %}
+            {% unless section.settings.title == blank %}
+                <div 
+                    class="{% unless section.settings.animation == '' %}animate__animated opacity-0 {{ section.settings.animation_speed }}{% endunless %}"
+                    data-animate-class="{{ section.settings.animation }}"
+                    style="animation-delay: 600ms;">
+                    <h2 class="title mb-4 {{ section.settings.title_size }}">
+                        {{ section.settings.title }}
+                    </h2>
+                </div>
+            {% endunless %}
+            {% unless section.settings.description == blank %}
+                <div 
+                    class="{% unless section.settings.animation == '' %}animate__animated opacity-0 {{ section.settings.animation_speed }}{% endunless %}"
+                    data-animate-class="{{ section.settings.animation }}"
+                    style="animation-delay: 800ms;">
+                    <div class="description rte mb-7 {{ section.settings.description_size }}">
+                        {{ section.settings.description }}
+                    </div>
+                </div>
+            {% endunless %}
+            {% unless section.settings.btn_text == blank %}
+                <div 
+                    class="{% unless section.settings.animation == '' %}animate__animated opacity-0 {{ section.settings.animation_speed }}{% endunless %}"
+                    data-animate-class="{{ section.settings.animation }}"
+                    style="animation-delay: 1000ms;">
+                    <a 
+                        class="btn {{ section.settings.btn_color }} {{ section.settings.btn_size }}"
+                        href="{{ section.settings.btn_url }}">
+                        {{ section.settings.btn_text }}
+                    </a>
+                </div>
+            {% endunless %}
+        </div>
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Parallax Image",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "animation",
+            "label": "Animation",
+            "default": "animate__fadeInUp",
+            "options": [
+                { "group": "Disabled", "value": "", "label": "No animation" },
+                { "group": "Fade", "value": "animate__fadeIn", "label": "Fade In" },
+                { "group": "Fade", "value": "animate__fadeInDown", "label": "Fade-in-down" },
+                { "group": "Fade", "value": "animate__fadeInLeft", "label": "Fade-in-left" },
+                { "group": "Fade", "value": "animate__fadeInRight", "label": "Fade-in-right" },
+                { "group": "Fade", "value": "animate__fadeInUp", "label": "Fade-in-up" },
+                { "group": "Zoom", "value": "animate__zoomIn", "label": "Zoom-in" },
+                { "group": "Zoom", "value": "animate__zoomInDown", "label": "Zoom-in-down" },
+                { "group": "Zoom", "value": "animate__zoomInLeft", "label": "Zoom-in-left" },
+                { "group": "Zoom", "value": "animate__zoomInRight", "label": "Zoom-in-right" },
+                { "group": "Zoom", "value": "animate__zoomInUp", "label": "Zoom-in-up" },
+                { "group": "Back", "value": "animate__backInDown", "label": "Back-in-down" },
+                { "group": "Back", "value": "animate__backInLeft", "label": "Back-in-left" },
+                { "group": "Back", "value": "animate__backInRight", "label": "Back-in-right" },
+                { "group": "Back", "value": "animate__backInUp", "label": "Back-in-up" },
+                { "group": "Bounce", "value": "animate__bounceIn", "label": "Bounce-in" },
+                { "group": "Bounce", "value": "animate__bounceInDown", "label": "Bounce-in-down" },
+                { "group": "Bounce", "value": "animate__bounceInLeft", "label": "Bounce-in-left" },
+                { "group": "Bounce", "value": "animate__bounceInRight", "label": "Bounce-in-right" },
+                { "group": "Bounce", "value": "animate__bounceInUp", "label": "Bounce-in-up" },
+                { "group": "LightSpeed", "value": "animate__lightSpeedInLeft", "label": "LightSpeed-in-left" },
+                { "group": "LightSpeed", "value": "animate__lightSpeedInRight", "label": "LightSpeed-in-right" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "animation_speed",
+            "label": "Animation speed",
+            "default": "animate__fast",
+            "options": [
+                { "value": "animate__slower", "label": "Slower" },
+                { "value": "animate__slow", "label": "Slow" },
+                { "value": "", "label": "Normal" },
+                { "value": "animate__fast", "label": "Fast" },
+                { "value": "animate__faster", "label": "Faster" }
+            ]
+        }, 
+        {
+            "type": "header",
+            "content": "Mobile image"
+        },
+        {
+            "type": "image_picker",
+            "id": "img_mobile",
+            "label": "Image"
+        },
+        {
+            "type": "range",
+            "id": "img_mobile_opacity",
+            "label": "Opacity",
+            "min": 0,
+            "max": 1,
+            "step": 0.1,
+            "default": 0.7
+        },
+        {
+            "type": "range",
+            "id": "img_mobile_blur",
+            "label": "Blur",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "select",
+            "id": "img_mobile_orientation",
+            "label": "Orientation",
+            "options": [
+                { "value": "up", "label": "Up" },
+                { "value": "right", "label": "Right" },
+                { "value": "down", "label": "Down" },
+                { "value": "left", "label": "Left" },
+                { "value": "up left", "label": "Up left" },
+                { "value": "up right", "label": "Up right" },
+                { "value": "down left", "label": "Down left" },
+                { "value": "down right", "label": "Down right" }
+            ],
+            "default": "down"
+        },
+        {
+            "type": "range",
+            "id": "img_mobile_scale",
+            "label": "Scale (%)",
+            "info": "Select 100% to disable the parallax effect",
+            "min": 100,
+            "max": 200,
+            "default": 120
+        },
+        {
+            "type": "header",
+            "content": "Desktop image"
+        },
+        {
+            "type": "image_picker",
+            "id": "img_desktop",
+            "label": "Image"
+        },
+        {
+            "type": "range",
+            "id": "img_desktop_opacity",
+            "label": "Opacity",
+            "min": 0,
+            "max": 1,
+            "step": 0.1,
+            "default": 0.7
+        },
+        {
+            "type": "range",
+            "id": "img_desktop_blur",
+            "label": "Blur",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "select",
+            "id": "img_desktop_orientation",
+            "label": "Orientation",
+            "options": [
+                { "value": "up", "label": "Up" },
+                { "value": "right", "label": "Right" },
+                { "value": "down", "label": "Down" },
+                { "value": "left", "label": "Left" },
+                { "value": "up left", "label": "Up left" },
+                { "value": "up right", "label": "Up right" },
+                { "value": "down left", "label": "Down left" },
+                { "value": "down right", "label": "Down right" }
+            ],
+            "default": "down"
+        },
+        {
+            "type": "range",
+            "id": "img_desktop_scale",
+            "label": "Parallax Scale (%)",
+            "info": "Select 100% to disable the parallax effect",
+            "min": 100,
+            "max": 200,
+            "default": 120
+        },
+        {
+            "type": "header",
+            "content": "Text"
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max-width (px)",
+            "default": "720"
+        },
+        {
+            "type": "text",
+            "id": "subtitle",
+            "label": "Subtitle",
+            "info": "It will show above the title. Leave empty to disable"
+        },
+        {
+            "type": "select",
+            "id": "subtitle_size",
+            "label": "Subtitle size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Parallax Image"
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title size",
+            "default": "h2",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Button"
+        },
+        {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Button text",
+            "info": "Leave empty to disable"
+        },
+        {
+            "type": "url",
+            "id": "btn_url",
+            "label": "Button URL"
+        },
+        {
+            "type": "select",
+            "id": "btn_color",
+            "label": "Button color",
+            "default": "btn-primary",
+            "options": [
+                { "group": "Normal", "value": "btn-link", "label": "Link" },
+                { "group": "Normal", "value": "btn-light", "label": "Light" },
+                { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                { "group": "Normal", "value": "btn-success", "label": "Success" },
+                { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                { "group": "Normal", "value": "btn-info", "label": "Info" },
+                { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "btn_size",
+            "label": "Button size",
+            "default": "btn-md",
+            "options": [
+                { "value": "btn-sm", "label": "Small" },
+                { "value": "btn-md", "label": "Normal" },
+                { "value": "btn-lg", "label": "Large" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "Parallax Image",
+            "category": "Image"
+        }
+    ]
+}
+{% endschema %}

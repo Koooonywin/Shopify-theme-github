@@ -1,0 +1,418 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<nav 
+    id="navbar-mobile" 
+    class="navbar {% if section.settings.menu_type == 'hamburger' %} d-block{% else %}d-lg-none{% endif %} {{ bg_color }} {{ section.settings.shadow }} {{ pt }} {{ pb }}">
+    <div class="container">
+        <a 
+            class="nav-link ms-n2"
+            href="#offcanvas-menu" 
+            data-bs-toggle="offcanvas" 
+            aria-controls="offcanvas-menu"
+            aria-label="{{ 'general.accessibility.menu' | t }}"
+            role="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            {% if section.settings.layout_mobile == 'navbar-mobile-with-search' %}
+                <span class="ms-2 extra-small text-uppercase">
+                    {{ 'general.general.menu' | t }}
+                </span>
+            {% endif %}
+        </a>
+        <a class="navbar-brand mx-auto py-0" href="{{ routes.root_url }}">
+            {% if section.settings.logo_mobile or section.settings.logo %}
+                {% liquid
+                    if section.settings.logo_mobile
+                        assign logo_mobile = section.settings.logo_mobile
+                    else
+                        assign logo_mobile = section.settings.logo
+                    endif
+                    assign logo_height_x2 = section.settings.logo_height_mobile | times: 2 
+                %}
+          {% if section.settings.menu_type == 'hamburger' %}
+                <img
+                    class="img-fluid d-lg-none d-block"
+                    src="{{ logo_mobile | image_url: height: logo_height_x2 }}" 
+                    alt="{{ shop.name }}"
+                    width="{{ section.settings.logo_height_mobile | times: logo_mobile.aspect_ratio | round }}" 
+                    height="{{ section.settings.logo_height_mobile }}"
+                    loading="lazy">
+                <img
+                    class="img-fluid d-lg-block d-none"
+                    src="{{ section.settings.logo | image_url: height: logo_height_x2 }}" 
+                    alt="{{ shop.name }}"
+                    width="{{ section.settings.logo_height_desktop | times: section.settings.logo.aspect_ratio | round }}" 
+                    height="{{ section.settings.logo_height_desktop }}"
+                    loading="lazy">
+            {% else %}
+                  <img
+                    class="img-fluid"
+                    src="{{ logo_mobile | image_url: height: logo_height_x2 }}" 
+                    alt="{{ shop.name }}"
+                    width="{{ section.settings.logo_height_mobile | times: logo_mobile.aspect_ratio | round }}" 
+                    height="{{ section.settings.logo_height_mobile }}"
+                    loading="lazy">
+            {% endif %}
+            {% else %}
+                <span class="fs-3">
+                    {{ shop.name }}
+                </span>
+            {% endif %}
+        </a>
+        {% if section.settings.layout_mobile == 'navbar-mobile-with-search' %}
+            <a 
+                class="nav-link px-3"
+                href="#offcanvas-search" 
+                data-bs-toggle="offcanvas" 
+                aria-controls="offcanvas-search"
+                aria-label="{{ 'general.accessibility.search' | t }}"
+                role="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </a>
+        {% endif %}
+        <a 
+            class="cart-icon nav-link me-n2" 
+            {% if request.page_type == 'cart' %}
+                href="{{ routes.cart_url }}" 
+            {% else %}
+                href="#offcanvas-cart" 
+                data-bs-toggle="offcanvas" 
+                aria-controls="offcanvas-cart" 
+                role="button"
+            {% endif %}
+            aria-label="{{ 'general.accessibility.cart' | t }} {{ cart.item_count }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="20.5" r="1"/><circle cx="18" cy="20.5" r="1"/><path d="M2.5 2.5h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6l1.6-8.4H7.1"/>
+            </svg>
+            <span 
+                class="cart-count-badge badge {% if section.settings.bg_color contains 'bg-primary' %}bg-white text-dark{% else %}bg-primary{% endif %}"
+                {% if cart.item_count == 0 %}hidden{% endif %}>
+                {{ cart.item_count }}
+            </span>
+        </a>  
+    </div>
+</nav>
+
+<nav 
+    id="navbar-desktop" 
+    class="navbar {% if section.settings.menu_type == 'hamburger' %}d-none{% else %}d-none d-lg-block{% endif %} {{ section.settings.bg_color }} {{ section.settings.shadow }} {{ section.settings.menu_desktop_trigger }} {{ pt }} {{ pb }}">
+    <div class="{{ section.settings.container }} position-relative">
+        <div class="row align-items-center flex-grow-1">
+            <div class="{% if section.settings.layout_desktop == 'navbar-desktop-logo-left' %}col-3{% else %}col-4 order-1 text-center{% endif %}">
+                <a class="navbar-brand me-auto py-0" href="{{ routes.root_url }}">
+                    {% if section.settings.logo %}
+                        {% assign logo_height_x2 = section.settings.logo_height_desktop | times: 2 %}
+                        <img
+                            class="img-fluid"
+                            src="{{ section.settings.logo | image_url: height: logo_height_x2 }}" 
+                            alt="{{ shop.name }}"
+                            width="{{ section.settings.logo_height_desktop | times: section.settings.logo.aspect_ratio | round }}" 
+                            height="{{ section.settings.logo_height_desktop }}"
+                            loading="lazy">
+                    {% else %}
+                        <span class="fs-3">
+                            {{ shop.name }}
+                        </span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="{% if section.settings.layout_desktop == 'navbar-desktop-logo-left' %}col-6{% else %}col-4 order-0{% endif %}">
+                {% render 'navbar-megamenu' %}
+            </div>
+            <div class="{% if section.settings.layout_desktop == 'navbar-desktop-logo-left' %}col-3{% else %}col-4 order-2{% endif %}">
+                <ul class="nav nav-icons justify-content-end" aria-label="{{ 'general.accessibility.utility_icons' | t }}">
+                    <li class="nav-item">
+                        <a
+                            class="nav-link" 
+                            href="#offcanvas-search" 
+                            data-bs-toggle="offcanvas"
+                            aria-controls="offcanvas-search" 
+                            role="button"
+                            aria-label="{{ 'general.accessibility.search' | t }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </a>
+                    </li>
+                    {% if shop.customer_accounts_enabled %}
+                        <li class="nav-item">
+                            <a 
+                                class="nav-link {% if template.name == 'login' or template.name == 'account' %}active{% endif %}" 
+                                aria-current="{% if template.name == 'login' or template.name == 'account' %}page{% endif %}" 
+                                href="{{ routes.account_url }}"
+                                aria-label="{{ 'general.accessibility.account' | t }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a 
+                            class="cart-icon nav-link" 
+                            {% if request.page_type == 'cart' %}
+                                href="{{ routes.cart_url }}" 
+                            {% else %}
+                                href="#offcanvas-cart" 
+                                data-bs-toggle="offcanvas" 
+                                aria-controls="offcanvas-cart" 
+                                role="button"
+                            {% endif %}
+                            aria-label="{{ 'general.accessibility.cart' | t }} {{ cart.item_count }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="10" cy="20.5" r="1"/><circle cx="18" cy="20.5" r="1"/><path d="M2.5 2.5h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6l1.6-8.4H7.1"/>
+                            </svg>
+                            <span 
+                                class="cart-count-badge badge {% if section.settings.bg_color contains 'bg-primary' %}bg-white text-dark{% else %}bg-primary{% endif %}"
+                                {% if cart.item_count == 0 %}hidden{% endif %}>
+                                {{ cart.item_count }}
+                            </span>
+                        </a>           
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% render 'offcanvas-menu' %}
+
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        {% if section.settings.logo %}
+            "logo": {{ section.settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+        {% endif %}
+        "sameAs": [
+            {{ settings.social_facebook | json }},
+            {{ settings.social_twitter | json }},
+            {{ settings.social_instagram | json }},
+            {{ settings.social_pinterest | json }},
+            {{ settings.social_tiktok | json }},
+            {{ settings.social_snapchat | json }},
+            {{ settings.social_snapchat | json }},
+            {{ settings.social_youtube | json }},
+            {{ settings.social_linkedin | json }}
+        ],
+        "url": {{ request.origin | append: page.url | json }}
+    }
+</script>
+  
+{%- if request.page_type == 'index' -%}
+    {% assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" %}
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": {{ shop.name | json }},
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {{ potential_action_target | json }},
+                "query-input": "required name=search_term_string"
+            },
+            "url": {{ request.origin | append: page.url | json }}
+        }
+    </script>
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "Navbar",
+    "class": "sticky-top",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "bg-white text-body",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "menu_type",
+            "label": "Menu type",
+            "options": [
+                { "value": "hamburger", "label": "Hamburger" },
+                { "value": "standard", "label": "standard" }
+            ],
+            "default": "standard"
+        },
+        {
+            "type": "select",
+            "id": "shadow",
+            "label": "Shadow",
+            "options": [
+                { "value": "shadow-none", "label": "No shadow" },
+                { "value": "shadow-sm", "label": "Shadow sm" },
+                { "value": "shadow", "label": "Shadow" },
+                { "value": "shadow-lg", "label": "Shadow lg" }
+            ],
+            "default": "shadow-sm"
+        },
+        {
+            "type": "select",
+            "id": "layout_mobile",
+            "label": "Layout - mobile",
+            "options": [
+                { "value": "navbar-mobile-simple", "label": "Simple" },
+                { "value": "navbar-mobile-with-search", "label": "With Search" }
+            ],
+            "default": "navbar-mobile-with-search"
+        },
+        {
+            "type": "select",
+            "id": "layout_desktop",
+            "label": "Layout - desktop",
+            "options": [
+                { "value": "navbar-desktop-logo-left", "label": "Logo left (default)" },
+                { "value": "navbar-desktop-logo-center", "label": "Logo center" }
+            ],
+            "default": "navbar-desktop-logo-left"
+        },
+        {
+            "type": "header",
+            "content": "Logo"
+        },
+        {
+            "type": "image_picker",
+            "id": "logo_mobile",
+            "label": "Logo mobile"
+        },
+        {
+            "type": "range",
+            "id": "logo_height_mobile",
+            "label": "Logo mobile height",
+            "min": 20,
+            "max": 100,
+            "step": 2,
+            "default": 40
+        },
+        {
+            "type": "image_picker",
+            "id": "logo",
+            "label": "Logo desktop"
+        },
+        {
+            "type": "range",
+            "id": "logo_height_desktop",
+            "label": "Logo desktop height",
+            "min": 20,
+            "max": 200,
+            "step": 2,
+            "default": 40
+        },
+        {
+            "type": "header",
+            "content": "Mobile menu"
+        },
+        {
+            "type": "link_list",
+            "id": "menu_mobile",
+            "label": "Menu",
+            "default": "main-menu"
+        },
+        {
+            "type": "link_list",
+            "id": "utilities_menu",
+            "label": "Utilities menu"
+        },
+        {
+            "type": "checkbox",
+            "id": "offcanvas_menu_show_social_icons",
+            "label": "Show social icons",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Desktop menu"
+        },
+        {
+            "type": "link_list",
+            "id": "menu_desktop",
+            "label": "Menu",
+            "default": "main-menu"
+        },
+        {
+            "type": "select",
+            "id": "menu_desktop_trigger",
+            "label": "Trigger",
+            "options": [
+                { "value": "menu-desktop-click", "label": "Click (recommended)" },
+                { "value": "menu-desktop-hover", "label": "Hover" }
+            ],
+            "default": "menu-desktop-click"
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 6,
+            "step": 1,
+            "default": 3
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 6,
+            "step": 1,
+            "default": 3
+        }
+    ]
+}
+{% endschema %}

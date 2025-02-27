@@ -1,0 +1,261 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+{% if section.settings.show %}
+    {% if section.settings.homepage == false or template.name == 'index' %}
+        <section 
+            id="announcement-bar-{{ section.id }}" 
+            class="announcement-bar enter-view {{ bg_color }} {{ section.settings.font_size }} {{ section.settings.text_transform }} {% if section.settings.sticky %}announcement-bar-sticky{% endif %}"
+            data-expiration-time="{{ section.settings.expiration_time }}">
+            <div 
+                class="{% unless section.settings.animation == '' %}animate__animated opacity-0 {{ section.settings.animation_speed }}{% endunless %}"
+                data-animate-class="{{ section.settings.animation }}">
+                <div 
+                    id="carousel-{{ section.id }}" 
+                    class="carousel slide mx-auto {% if section.settings.bg_color contains 'text-dark' %}carousel-dark{% endif %}" 
+                    data-bs-ride="{% if section.settings.autoplay %}carousel{% else %}false{% endif %}"
+                    style="max-width: {{ section.settings.max_width }}px;">
+                    <div class="carousel-inner w-auto mx-8">
+                        {% for block in section.blocks %}
+                            <div 
+                                class="carousel-item {% if forloop.first == true %}active{% endif %}" 
+                                data-index="{{ forloop.index0 }}"
+                                {{ block.shopify_attributes }}>
+                                {% if block.settings.url == blank %}
+                                    <div class="rte text-center lh-sm {{ pt }} {{ pb }}">
+                                        {{ block.settings.description }}
+                                    </div>
+                                {% else %}
+                                    <a href="{{ block.settings.url }}" class="{{ pt }} {{ pb }}">
+                                        <div class="rte text-center lh-sm {{ pt }} {{ pb }}">
+                                            {{ block.settings.description }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="ms-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h13M12 5l7 7-7 7"/>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if section.settings.controls and section.blocks.size > 1 %}
+                        <button 
+                            class="carousel-control carousel-control-prev" 
+                            type="button" 
+                            data-bs-target="#carousel-{{ section.id }}" 
+                            data-bs-slide="prev">
+                            <span class="carousel-control-icon carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">
+                                {{ 'general.accessibility.previous' | t }}
+                            </span>
+                        </button>
+                        <button 
+                            class="carousel-control carousel-control-next" 
+                            type="button" 
+                            data-bs-target="#carousel-{{ section.id }}" 
+                            data-bs-slide="next">
+                            <span class="carousel-control-icon carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">
+                                {{ 'general.accessibility.next' | t }}
+                            </span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endif %}
+
+{% schema %}
+{
+    "name": "Announcement bar",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "checkbox",
+            "id": "show",
+            "label": "Show announcement bar",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "homepage",
+            "label": "Show only on homepage",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "sticky",
+            "label": "Sticky to the top",
+            "default": false
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "bg-dark text-white",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max-width (px)",
+            "default": "600"
+        },
+        {
+            "type": "select",
+            "id": "font_size",
+            "label": "Font size",
+            "default": "small",
+            "options": [
+                { "value": "", "label": "Normal" },
+                { "value": "small", "label": "Small" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "text_transform",
+            "label": "Text transform",
+            "default": "text-capitalize",
+            "options": [
+                { "value": "", "label": "Normal" },
+                { "value": "text-capitalize", "label": "Capitalize" },
+                { "value": "text-lowercase", "label": "Lowercase" },
+                { "value": "text-uppercase", "label": "Uppercase" }
+
+            ]
+        },
+        {
+            "type": "select",
+            "id": "animation",
+            "label": "Animation",
+            "default": "animate__fadeInDown",
+            "options": [
+                { "group": "Disabled", "value": "", "label": "No animation" },
+                { "group": "Fade", "value": "animate__fadeIn", "label": "Fade In" },
+                { "group": "Fade", "value": "animate__fadeInDown", "label": "Fade-in-down" },
+                { "group": "Fade", "value": "animate__fadeInLeft", "label": "Fade-in-left" },
+                { "group": "Fade", "value": "animate__fadeInRight", "label": "Fade-in-right" },
+                { "group": "Fade", "value": "animate__fadeInUp", "label": "Fade-in-up" },
+                { "group": "Zoom", "value": "animate__zoomIn", "label": "Zoom-in" },
+                { "group": "Zoom", "value": "animate__zoomInDown", "label": "Zoom-in-down" },
+                { "group": "Zoom", "value": "animate__zoomInLeft", "label": "Zoom-in-left" },
+                { "group": "Zoom", "value": "animate__zoomInRight", "label": "Zoom-in-right" },
+                { "group": "Zoom", "value": "animate__zoomInUp", "label": "Zoom-in-up" },
+                { "group": "Back", "value": "animate__backInDown", "label": "Back-in-down" },
+                { "group": "Back", "value": "animate__backInLeft", "label": "Back-in-left" },
+                { "group": "Back", "value": "animate__backInRight", "label": "Back-in-right" },
+                { "group": "Back", "value": "animate__backInUp", "label": "Back-in-up" },
+                { "group": "Bounce", "value": "animate__bounceIn", "label": "Bounce-in" },
+                { "group": "Bounce", "value": "animate__bounceInDown", "label": "Bounce-in-down" },
+                { "group": "Bounce", "value": "animate__bounceInLeft", "label": "Bounce-in-left" },
+                { "group": "Bounce", "value": "animate__bounceInRight", "label": "Bounce-in-right" },
+                { "group": "Bounce", "value": "animate__bounceInUp", "label": "Bounce-in-up" },
+                { "group": "LightSpeed", "value": "animate__lightSpeedInLeft", "label": "LightSpeed-in-left" },
+                { "group": "LightSpeed", "value": "animate__lightSpeedInRight", "label": "LightSpeed-in-right" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "animation_speed",
+            "label": "Animation speed",
+            "default": "animate__fast",
+            "options": [
+                { "value": "animate__slower", "label": "Slower" },
+                { "value": "animate__slow", "label": "Slow" },
+                { "value": "", "label": "Normal" },
+                { "value": "animate__fast", "label": "Fast" },
+                { "value": "animate__faster", "label": "Faster" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Carousel",
+            "info": "Will not show if you only publish one slide"
+        },
+        {
+            "type": "checkbox",
+            "id": "controls",
+            "label": "Controls",
+            "info": "Prev/Next buttons",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "autoplay",
+            "label": "Autoplay",
+            "info": "Every 5 seconds",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 6,
+            "step": 1,
+            "default": 3
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 6,
+            "step": 1,
+            "default": 3
+        }
+    ],
+    "blocks": [
+        {
+            "type": "Announcement",
+            "name": "Announcement",
+            "settings": [
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "url",
+                    "id": "url",
+                    "label": "Link"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

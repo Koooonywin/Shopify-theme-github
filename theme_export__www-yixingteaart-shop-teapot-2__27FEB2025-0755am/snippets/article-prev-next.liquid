@@ -1,0 +1,42 @@
+{% if blog.previous_article or blog.next_article %}
+    <div id="article-prev-next" class="">
+        <div id="article-prev-next-prev">
+            {% if blog.previous_article %}
+                <a 
+                    href="{{ blog.previous_article.url }}"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    data-bs-html="true"
+                    data-bs-delay="300"
+                    data-bs-title="{{ blog.previous_article.title }}">
+                    <img 
+                        class="article-item-img img-fluid rounded img-thumbnail"
+                        src="{{ blog.previous_article.image | image_url: width: 90, height: 90, crop: 'center' }}" 
+                        alt="{{ blog.previous_article.image.alt | escape }}"
+                        width="90"
+                        height="90"
+                        loading="lazy">
+                </a>
+            {% endif %}
+        </div>
+        {% if blog.next_article %}
+            <div id="article-prev-next-next">
+                <a 
+                    href="{{ blog.next_article.url }}"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    data-bs-html="true"
+                    data-bs-delay="300"
+                    data-bs-title="{{ blog.next_article.title }} <br> {{ blog.next_article.price | money }}">
+                    <img 
+                        class="article-item-img img-fluid rounded img-thumbnail"
+                        src="{{ blog.next_article.image | image_url: width: 90, height: 90, crop: 'center' }}" 
+                        alt="{{ blog.next_article.image.alt }}"
+                        width="90"
+                        height="90"
+                        loading="lazy">
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

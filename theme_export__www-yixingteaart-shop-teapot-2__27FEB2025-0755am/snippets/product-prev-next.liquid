@@ -1,0 +1,62 @@
+{% assign block = section.blocks | where: 'type', 'prev_next' | first %}
+
+{% if block %}
+    {% liquid
+        case block.settings.img_orientation
+            when 'square'
+                assign img_width  = 90
+                assign img_height = 90
+            when 'landscape'
+                assign img_width  = 90
+                assign img_height = 72
+            when 'potrait'
+                assign img_width  = 72
+                assign img_height = 90
+        endcase
+    %}
+
+    {% if collection.previous_product or collection.next_product %}
+        <div 
+            id="product-prev-next"
+            class="">
+            <div id="product-prev-next-prev">
+                {% if collection.previous_product %}
+                    <a 
+                        href="{{ collection.previous_product.url }}"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"
+                        data-bs-html="true"
+                        data-bs-delay="300"
+                        data-bs-title="{{ collection.previous_product.title }} <br> {{ collection.previous_product.price | money }}">
+                        <img 
+                            class="product-item-img img-fluid rounded {{ block.settings.img_thumbnail }}"
+                            src="{{ collection.previous_product.featured_image.src | image_url: width: img_width, height: img_height, crop: 'center' }}" 
+                            alt="{{ collection.previous_product.featured_image.alt | escape }}"
+                            width="{{ img_width }}"
+                            height="{{ img_height }}"
+                            loading="lazy">
+                    </a>
+                {% endif %}
+            </div>
+            {% if collection.next_product %}
+                <div id="product-prev-next-next">
+                    <a 
+                        href="{{ collection.next_product.url }}"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"
+                        data-bs-html="true"
+                        data-bs-delay="300"
+                        data-bs-title="{{ collection.next_product.title }} <br> {{ collection.next_product.price | money }}">
+                        <img 
+                            class="product-item-img img-fluid rounded {{ block.settings.img_thumbnail }}"
+                            src="{{ collection.next_product.featured_image.src | image_url: width: img_width, height: img_height, crop: 'center' }}" 
+                            alt="{{ collection.next_product.featured_image.alt | escape }}"
+                            width="{{ img_width }}"
+                            height="{{ img_height }}"
+                            loading="lazy">
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}

@@ -1,0 +1,13 @@
+<div class="mb-6">
+  <ul class="list-unstyled">
+  {% for item in items %}
+    {% if item contains ':' %}
+    {% assign icon = item | split: ':' | first %}
+    {% assign text = item | split: ':' | last %}
+     <li><i class="{{ icon }}"></i>{{ text }}</li>
+      {% else %}
+      <li>{{ item }}</li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+</div>

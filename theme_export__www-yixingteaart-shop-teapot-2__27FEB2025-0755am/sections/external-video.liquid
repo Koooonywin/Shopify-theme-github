@@ -1,0 +1,194 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+
+    if section.settings.external_video.type == 'youtube'
+        assign video_src = 'https://www.youtube.com/embed/' | append: section.settings.external_video.id | append: '&mute=1 to &autoplay=1'
+    else
+        assign video_src = 'https://player.vimeo.com/video/' | append: section.settings.external_video.id
+    endif
+%}
+
+<section 
+    id="external-video-{{ section.id }}" 
+    class="external-video {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{{ section.settings.container }}">
+        <div class="mx-auto" style="max-width: {{ section.settings.max_width }}px">
+            <div class="ratio ratio-16x9">
+                <iframe
+                    class="rounded {{ section.settings.img_thumbnail }}"
+                    src="{{ video_src }}"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                    frameborder="0"
+                    allowfullscreen
+                    loading="lazy"
+                    {% if section.settings.force_lazyload and section.settings.external_video.type == 'youtube' %}
+                        srcdoc="
+                            <style>
+                                * { padding:0; margin:0; overflow:hidden }
+                                html, body { height: 100%; background: black; }
+                                img, span { position: absolute; width: 100%; top: 0; bottom: 0; left: 0; right: 0; margin: auto; transition: all .2s ease-out; }
+                                a:hover img { opacity: .75; }
+                                span {
+                                    width: 60px; 
+                                    height: 42px;
+                                    background-color: #FF0000; 
+                                    color: white; 
+                                    border-radius: 6px; 
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                }
+                                a:hover span { transform: scale(1.1); }
+                            </style>
+                            <a href=https://www.youtube.com/embed/{{ section.settings.external_video.id }}?autoplay=1&mute=1>
+                                <img 
+                                    src=https://img.youtube.com/vi/{{ section.settings.external_video.id }}/maxresdefault.jpg 
+                                    alt='Video The Dark Knight Rises: What Went Wrong? – Wisecrack Edition'>
+                                <span>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' class='bi bi-play-fill' viewBox='0 0 16 16'>
+                                        <path d='m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z'/>
+                                    </svg>
+                                </span>
+                            </a>"
+                    {% endif %}>
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "External Video",
+    "settings": [
+        {
+            "type": "video_url",
+            "id": "external_video",
+            "label": "Video link",
+            "accept": [
+                "youtube", "vimeo"
+            ],
+            "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+        },
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max width (px)",
+            "info": "Adjust container width (in pixels)",
+            "default": "960"
+        },
+        {
+            "type": "select",
+            "id": "img_thumbnail",
+            "label": "Video thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "force_lazyload",
+            "label": "Force Layzload",
+            "info": "Note: Applies only to YouTube videos. Modern browsers support the native lazyload feature but with this setting enabled youtube iframes have better lazyload implemenation as only the video screenshot is loaded.",
+            "default": true
+        },
+        
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "External Video",
+            "category": "Media"
+        }
+    ]
+}
+{% endschema %}

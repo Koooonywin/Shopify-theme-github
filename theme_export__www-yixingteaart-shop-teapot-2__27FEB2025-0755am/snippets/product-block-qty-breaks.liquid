@@ -1,0 +1,50 @@
+{% liquid 
+    assign current_variant = product.selected_or_first_available_variant
+
+    assign metafield_namespace = block.settings.metafield | split: '.' | first
+    assign metafield_key = block.settings.metafield | split: '.' | last
+
+    assign metafield_value = product.metafields[metafield_namespace][metafield_key].value
+    
+    assign mt = block.settings.mt | prepend: 'mt-'
+    assign mb = block.settings.mb | prepend: 'mb-'
+
+    assign title_fs_mobile = block.settings.title_font_size_mobile | prepend: 'fs-' 
+    assign title_fs_desktop = block.settings.title_font_size_desktop | prepend: 'fs-lg-'
+%}
+
+
+{% if metafield_value %}
+    <div id="product-qty-breaks" class="{{ mt }} {{ mb }}" {{ block.shopify_attributes }}>
+        <h2 
+            id="product-qty-breaks-title"
+            class="title {{ title_fs_mobile }} {{ title_fs_desktop }}">
+            {{ block.settings.title }}
+        </h2>
+        <ul 
+            id="product-qty-breaks-list"
+            class="list-unstyled mb-0" 
+            aria-labelledby="product-qty-breaks-title">
+            {% for item in metafield_value %}
+                {% liquid 
+                    assign qty = item | split: ':' | first
+                    assign discount = item | split: ':' | last
+                    assign price = 100 | minus: discount | divided_by: 100.0 | times: current_variant.price | money
+                    assign save = discount | append: '%'
+                %}
+                <li class="form-check">
+                    <input 
+                        id="product-qty-breaks-{{ forloop.index }}"
+                        class="form-check-input" 
+                        type="radio"
+                        name="product-qty-breaks"
+                        data-qty="{{ qty }}"
+                        data-discount="{{ discount }}">
+                    <label class="form-check-label" for="product-qty-breaks-{{ forloop.index }}">
+                        {{ 'product.qty_breaks.label_text_html' | t: qty: qty, price: price, save: save }}
+                    </label>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

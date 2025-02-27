@@ -1,0 +1,719 @@
+{% liquid
+    assign pt = section.settings.pt | prepend: 'pt-5 pt-sm-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+
+    assign current_variant = product.selected_or_first_available_variant
+%}
+
+<a class="visually-hidden-focusable" href="#product-content">
+    {{ 'general.accessibility.skip_product_content' | t }}
+</a>
+
+<section 
+    id="product-template" 
+    class="{{ pt }} {{ pb }}"
+    data-product-handle="{{ product.handle }}">
+    <div class="container">
+        {% if section.settings.show_breadcrumbs and section.settings.breadcrumb_position == 'top' %}
+            <div class="breadcrumbs-wrapper mb-6">
+                {% render 'breadcrumbs' %}
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-6">
+                {% render 'product-gallery' %}
+            </div>
+            <div class="col-lg-6">
+                <div id="product-content" class="product-content">
+                    {% if section.settings.show_vendor and product.vendor %}
+                        <p class="product-vendor text-muted my-1 text-uppercase">
+                            {{ product.vendor }}
+                        </p>
+                    {% endif %}
+                    
+                    <h1 class="title mb-3 {{ section.settings.title_size }}">
+                        {{ product.title }}
+                    </h1>
+
+                    {% if section.settings.show_sku %}
+                        <p 
+                            class="current-variant-sku mt-n3 text-muted mb-3 text-uppercase small"
+                            {% if current_variant.sku == blank %}hidden{% endif %}>
+                            {{ current_variant.sku }}
+                        </p>
+                    {% endif %}
+
+                    {% render 'product-rating-badge', product: product %}
+                    
+                    {% if product.metafields.descriptors.subtitle %}
+                        <p class="subtitle text-muted mb-4">
+                            {{ product.metafields.descriptors.subtitle }}
+                        </p>
+                    {% endif %}
+                    
+                    <p class="product-price fs-4 mb-5">
+                        {% if current_variant.compare_at_price > current_variant.price %}
+                            <span class="product-price-compare text-muted me-3">
+                                <span class="visually-hidden">
+                                    {{ 'product.price_regular' | t }} &nbsp;
+                                </span>
+                                <s>{{ current_variant.compare_at_price | money }}</s>
+                            </span>
+                            <span class="product-price-final">
+                                <span class="visually-hidden">
+                                    {{ 'product.price_sale' | t }} &nbsp;
+                                </span>
+                                {{ current_variant.price | money }}
+                            </span>
+                        {% else %}
+                            <span class="product-price-final">
+                                {{ current_variant.price | money }}
+                            </span>
+                        {% endif %}
+                        {% if current_variant.available and current_variant.compare_at_price > current_variant.price %}
+                            <span class="price-badge-sale badge">
+                                {{ 'product.save' | t }} {{ current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price | round | append: '%' }}
+                            </span>    
+                        {% endif %}
+                        {% unless current_variant.available %}
+                            <span class="price-badge-sold-out badge">
+                                {{ 'product.sold_out' | t }}
+                            </span>        
+                        {% endunless %}
+                    </p>
+
+                    {% form 'product', product %}
+                        {{ form | payment_terms }}
+                    {% endform %}
+
+                    {% render 'custom-block-test' %}
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if section.settings.show_breadcrumbs and section.settings.breadcrumb_position == 'bottom' %}
+                            <div class="breadcrumbs-wrapper me-6">
+                                {% render 'breadcrumbs' %}
+                            </div>
+                        {% endif %}
+                        {% if section.settings.show_share_btn %}
+                            <div class="ms-auto">
+                                {% render 'share-button', title: product.title, url: product.url %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% liquid
+    render 'product-block-size-chart'
+%}
+
+{%- liquid
+    if product.selected_or_first_available_variant.featured_media
+        assign seo_media = product.selected_or_first_available_variant.featured_media
+    else
+        assign seo_media = product.featured_media
+    endif
+-%}
+
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ request.origin | append: product.url | json }},
+    {% if seo_media -%}
+        "image": [
+            {{ seo_media | image_url: width: seo_media.preview_image.width | prepend: "https:" | json }}
+        ],
+    {%- endif %}
+    "description": {{ product.description | strip_html | json }},
+    {% if product.selected_or_first_available_variant.sku != blank -%}
+        "sku": {{ product.selected_or_first_available_variant.sku | json }},
+    {%- endif %}
+    "brand": {
+        "@type": "Brand",
+        "name": {{ product.vendor | json }}
+    },
+    "offers": [
+        {%- for variant in product.variants -%}
+            {
+            "@type" : "Offer",
+            {%- if variant.sku != blank -%}
+                "sku": {{ variant.sku | json }},
+            {%- endif -%}
+            {%- if variant.barcode.size == 12 -%}
+                "gtin12": {{ variant.barcode }},
+            {%- endif -%}
+            {%- if variant.barcode.size == 13 -%}
+                "gtin13": {{ variant.barcode }},
+            {%- endif -%}
+            {%- if variant.barcode.size == 14 -%}
+                "gtin14": {{ variant.barcode }},
+            {%- endif -%}
+            "availability" : "http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+            "price" : {{ variant.price | divided_by: 100.00 | json }},
+            "priceCurrency" : {{ cart.currency.iso_code | json }},
+            "url" : {{ request.origin | append: variant.url | json }}
+            }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+    ]
+}
+</script>
+
+{% schema %}
+{
+    "name": "Product (template)",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title Size",
+            "default": "h2",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "show_vendor",
+            "label": "Show vendor",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_sku",
+            "label": "Show SKU",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_breadcrumbs",
+            "label": "Show Breacrumb",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "breadcrumb_position",
+            "label": "Breacrumb position",
+            "default": "bottom",
+            "options": [
+                { "value": "top", "label": "Top" },
+                { "value": "bottom", "label": "Bottom" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "show_share_btn",
+            "label": "Show Share button",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Gallery"
+        },
+        {
+            "type": "select",
+            "id": "gallery_img_orientation",
+            "label": "Image orientation",
+            "default": "square",
+            "options": [
+                { "value": "square", "label": "Square" },
+                { "value": "landscape", "label": "Landscape" },
+                { "value": "potrait", "label": "Potrait" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "gallery_img_thumbnail",
+            "label": "Image thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "gallery_show_thumbnails_mobile",
+            "label": "Show thumb images on mobile",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "gallery_enable_lightbox",
+            "label": "Enable lightbox mode (full-screen)",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Form"
+        },
+        {
+            "type": "checkbox",
+            "id": "form_light_bg",
+            "label": "Light bg color",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "form_show_qty_field",
+            "label": "Show quantity field",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "form_show_buy_btn",
+            "label": "Show Buy button",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "form_show_dynamic_buttons",
+            "label": "Show dynamic buttons",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 10
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 10
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "product_description",
+            "name": "Product description",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Details"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "within_accordion",
+                    "label": "Show within accordion",
+                    "info": "If disabled it will show above the accordion blocks",
+                    "default": true
+                },
+                {
+                    "type": "html",
+                    "id": "accordion_icon",
+                    "label": "Icon within accordion",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                }
+            ]
+        },
+        {
+            "type": "richtext",
+            "name": "Richtext",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Rich text"
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "html",
+                    "id": "accordion_icon",
+                    "label": "Icon within accordion",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                }
+            ]
+        },
+        {
+            "type": "trust_badges",
+            "name": "Trust badges",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Trust badges list",
+                    "info": "Used for accessibility purposes"
+                },
+                {
+                    "type": "text",
+                    "id": "max_width",
+                    "label": "Max-width (px)",
+                    "default": "400"
+                },
+                {
+                    "type": "select",
+                    "id": "col_size",
+                    "label": "Column width",
+                    "options": [
+                        { "value": "col-3", "label": "25%" },
+                        { "value": "col-4", "label": "33%" },
+                        { "value": "col-6", "label": "50%" },
+                        { "value": "col-12", "label": "100%" }
+                    ],
+                    "default": "col-4"
+                },
+                {
+                    "type": "header",
+                    "content": "item 1"
+                },
+                {
+                    "type": "html",
+                    "id": "icon_1",
+                    "label": "Icon 1 (svg)",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                },
+                {
+                    "type": "html",
+                    "id": "text_1",
+                    "label": "Test 1"
+                },
+                {
+                    "type": "header",
+                    "content": "item 2"
+                },
+                {
+                    "type": "html",
+                    "id": "icon_2",
+                    "label": "Icon 2 (svg)",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                },
+                {
+                    "type": "html",
+                    "id": "text_2",
+                    "label": "Test 2"
+                },
+                {
+                    "type": "header",
+                    "content": "item 3"
+                },
+                {
+                    "type": "html",
+                    "id": "icon_3",
+                    "label": "Icon 3 (svg)",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                },
+                {
+                    "type": "html",
+                    "id": "text_3",
+                    "label": "Test 3"
+                },
+                {
+                    "type": "header",
+                    "content": "item 4"
+                },
+                {
+                    "type": "html",
+                    "id": "icon_4",
+                    "label": "Icon 4 (svg)",
+                    "info": "You may get svg icons from libraries like [Bootstrap Icons](https://icons.getbootstrap.com)"
+                },
+                {
+                    "type": "html",
+                    "id": "text_4",
+                    "label": "Test 4"
+                }
+            ]
+        },
+        {
+            "type": "personalization",
+            "name": "Personalization Field",
+            "settings": [
+                {
+                    "type": "paragraph",
+                    "content": "Display custom properties like Name Input or File Upload"
+                },
+                {
+                    "type": "select",
+                    "id": "type",
+                    "label": "Type",
+                    "default": "text",
+                    "options": [
+                        { "value": "text", "label": "Text" },
+                        { "value": "phone", "label": "Phone" },
+                        { "value": "date", "label": "Date" },
+                        { "value": "textarea", "label": "Textarea" },
+                        { "value": "file", "label": "File Upload" },
+                        { "value": "select", "label": "Select" },
+                        { "value": "checkbox", "label": "Checkbox" },
+                        { "value": "radio", "label": "Radio" }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Your Name"
+                },
+                {
+                    "type": "text",
+                    "id": "placeholder",
+                    "label": "Placeholder",
+                    "default": "John Doe",
+                    "info": "Leavey empty to hide. This setting is only used on the types that allows it."
+                },
+                {
+                    "type": "textarea",
+                    "id": "values",
+                    "label": "Values",
+                    "default": "blue, green, white",
+                    "info": "Applies only if the type setting selected above is 'select', 'radio' or 'checkbox'"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "required",
+                    "label": "Required field",
+                    "default": true,
+                    "info": "If enabled the customer can not leave this field empty"
+                },
+                {
+                    "type": "text",
+                    "id": "maxlength",
+                    "label": "Max-length",
+                    "info": "Limit the number of characters for the input/textarea"
+                },
+                {
+                    "type": "richtext",
+                    "id": "helper_text",
+                    "label": "Helper hext",
+                    "info": "Additonal text to show below the form field."
+                }
+            ]
+        },
+        {
+            "type": "liquid_code",
+            "name": "Liquid code",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "position",
+                    "label": "Position",
+                    "options": [
+                        { "value": "before-form", "label": "Before form" },
+                        { "value": "after-form", "label": "After form" }
+                    ],
+                    "default": "before-form"
+                },
+                {
+                    "type": "liquid",
+                    "id": "liquid",
+                    "label": "HTML code",
+                    "default": "<p class=\"bg-light rounded border p-4\">Today's date: <b>{{ 'now' | date: \"%b %d, %Y\" }}</b></p>",
+                    "info": "Note: You may use both HTML and Liquid codes."
+                }
+            ]
+        },
+        {
+            "type": "value_props",
+            "name": "Value list",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "position",
+                    "label": "Position",
+                    "options": [
+                        { "value": "before-form-before-liquid", "label": "Before form before liquid" },
+                        { "value": "before-form-after-liquid", "label": "Before form after liquid" }
+                    ],
+                    "default": "before-form-before-liquid"
+                },
+                {
+                    "type": "textarea",
+                    "id": "content",
+                    "label": "add items as a list",
+                    "info": "you can also add icons example icon_name:list item"
+                }
+            ]
+        },
+        {
+            "type": "product_form",
+            "name": "Product Form",
+            "settings": []
+        },
+        {
+            "type": "product_accordian",
+            "name": "Product Tabs Wrapper",
+            "settings": []
+        },
+        {
+            "type": "show_store_availability",
+            "name": "Store availability",
+            "settings": []
+        },
+        {
+            "type": "size_chart",
+            "name": "Size chart",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "btn_color",
+                    "label": "Button color",
+                    "default": "btn-outline-secondary",
+                    "options": [
+                        { "group": "Normal", "value": "btn-link", "label": "Link" },
+                        { "group": "Normal", "value": "btn-light", "label": "Light" },
+                        { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                        { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                        { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                        { "group": "Normal", "value": "btn-success", "label": "Success" },
+                        { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                        { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                        { "group": "Normal", "value": "btn-info", "label": "Info" },
+                        { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                        { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                        { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                        { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                        { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                        { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                        { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                        { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Size Chart"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "img",
+                    "label": "Image"
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "page",
+                    "id": "page",
+                    "label": "Page"
+                }
+            ]
+        },
+        {
+            "type": "qty_breaks",
+            "name": "Quantity Breaks",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "paragraph",
+                    "content": "Allow users to select pre-defied quantities with radio buttons, preferably with a discount."
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Buy more & save up to 40%"
+                },
+                {
+                    "type": "range",
+                    "id": "title_font_size_mobile",
+                    "label": "Title font-size | mobile",
+                    "min": 1,
+                    "max": 12,
+                    "default": 4
+                },
+                {
+                    "type": "range",
+                    "id": "title_font_size_desktop",
+                    "label": "Title font-size | desktop",
+                    "min": 1,
+                    "max": 12,
+                    "default": 4
+                },
+                {
+                    "type": "text",
+                    "id": "metafield",
+                    "label": "Metafield namespace\/key",
+                    "default": "ecomify.qty_breaks",
+                    "info": "Please [create the metafield above first](https:\/\/shopify.com\/admin\/metafields\/product\/create) and then add the quantity breaks value as described in our documentation."
+                },
+                {
+                    "type": "header",
+                    "content": "Spacing"
+                },
+                {
+                    "type": "range",
+                    "id": "mt",
+                    "label": "Margin top",
+                    "min": 0,
+                    "max": 20,
+                    "step": 1,
+                    "default": 3
+                },
+                {
+                    "type": "range",
+                    "id": "mb",
+                    "label": "Margin bottom",
+                    "min": 0,
+                    "max": 20,
+                    "step": 1,
+                    "default": 3
+                }
+            ]
+        }
+    ],
+    "templates": ["product"],
+    "presets": [
+        {
+            "name": "Product (template)",
+            "category": "Product page"
+        }
+    ]
+}
+{% endschema %}

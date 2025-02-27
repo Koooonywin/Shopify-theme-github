@@ -1,0 +1,620 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<section 
+    id="testimonials-{{ section.id }}" 
+    class="testimonials {{ bg_color }} {{ section.settings.text_align }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{{ section.settings.container }}">
+        <h2 class="title mb-4 {{ section.settings.title_size }}">
+            {{ section.settings.title }}
+        </h2>
+        {% unless section.settings.description == blank %}
+            <div class="description rte mt-n3 mb-5 text-muted {{ section.settings.description_size }}">
+                {{ section.settings.description }}
+            </div>
+        {% endunless %}
+        <div 
+            class="splide mx-n3 mx-lg-n4"
+            data-loop="{{ section.settings.carousel_loop }}"
+            data-arrows="{{ section.settings.carousel_arrows }}"
+            data-pagination="{{ section.settings.carousel_pagination }}"
+            data-easing="{{ section.settings.carousel_easing }}"
+            data-speed="{{ section.settings.carousel_speed }}"
+            data-autoplay="{{ section.settings.carousel_autoplay }}"
+            data-interval="{{ section.settings.carousel_interval | times: 1000 }}"
+            data-per-move="{{ section.settings.carousel_per_move }}"
+            data-rewind="{{ section.settings.carousel_rewind }}"
+            data-breakpoint-xs="{{ section.settings.breakpoint_xs }}"
+            data-breakpoint-sm="{{ section.settings.breakpoint_sm }}"
+            data-breakpoint-md="{{ section.settings.breakpoint_md }}"
+            data-breakpoint-lg="{{ section.settings.breakpoint_lg }}"
+            data-breakpoint-xl="{{ section.settings.breakpoint_xl }}"
+            data-breakpoint-xxl="{{ section.settings.breakpoint_xxl }}"
+            data-text-slide-of="{{ 'general.accessibility.slide_of' | t }}"
+            role="group">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    {% for block in section.blocks %}
+                        <li class="splide__slide p-3 p-lg-4" {{ block.shopify_attributes }}>
+                            <div 
+                                class="card h-100 text-dark {{ block.settings.shadow }} {{ block.settings.border_color }}"
+                                style="border-width: {{ block.settings.border_width }}px;">
+                                <div class="card-body {{ block.settings.text_align }}">
+                                    <div class="d-flex align-items-center mb-5">
+                                        {% unless block.settings.img == blank %}
+                                            <img
+                                                class="img-fluid rounded-circle me-4"
+                                                src="{{ block.settings.img.src | image_url: width: block.settings.img_width, height: block.settings.img_height, crop: 'center' }}"
+                                                alt="{{ block.settings.img.alt | escape }}"
+                                                width="{{ block.settings.img_width }}"
+                                                height="{{ block.settings.img_height }}"
+                                                loading="lazy">
+                                        {% endunless %}
+                                        <div class="title-wrapper">
+                                            {% unless block.settings.title == blank %}
+                                                <h3 class="title mb-0 {{ block.settings.title_size }}">
+                                                    {{ block.settings.title }}
+                                                </h3>
+                                            {% endunless %}
+                                            {% if block.settings.show_stars %}
+                                                <div class="d-flex mt-2 mb-0" style="color: {{ block.settings.star_color }};">
+                                                    {% for n in (1..5) %}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill m-1" viewBox="0 0 16 16" aria-hidden="true">
+                                                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                                        </svg>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% unless block.settings.description == blank %}
+                                        <div class="description rte mt-n3 mb-0 {{ block.settings.description_size }}">
+                                            {{ block.settings.description }}
+                                        </div>
+                                    {% endunless %}
+                                    {% unless block.settings.btn_text == blank %}
+                                        <a class="btn mt-5 w-100 {{ block.settings.btn_color }} {{ block.settings.btn_size }}" href="{{ block.settings.btn_url }}">
+                                            {{ block.settings.btn_text }}
+                                        </a>
+                                    {% endunless %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% if section.settings.btn_show %}
+            <a 
+                class="btn btn-md mt-6 mb-0 {{ section.settings.btn_color }} {{ section.settings.btn_size }}" 
+                href="{{ section.settings.btn_url }}">
+                {{ section.settings.btn_text }}
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Testimonials",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "text_align",
+            "label": "Text align",
+            "default": "text-center",
+            "options": [
+                { "value": "text-start", "label": "Left" },
+                { "value": "text-center", "label": "Center" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Testimonials"
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title size",
+            "default": "h2",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description (optional)",
+            "default": "<p>Add on optional description to this section</p>"
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Carousel"
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_arrows",
+            "label": "Show arrows",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_pagination",
+            "label": "Show pagination",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "carousel_easing",
+            "label": "Easing",
+            "default": "cubic-bezier(.42,.65,.27,.99)",
+            "info": "[Learn more](https://cubic-bezier.com)"
+        },
+        {
+            "type": "range",
+            "id": "carousel_speed",
+            "label": "Speed (ms)",
+            "min": 50,
+            "max": 1000,
+            "default": 400,
+            "step": 50,
+            "info": "Transition speed in milliseconds."
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_autoplay",
+            "label": "Autoplay",
+            "default": false
+        },
+        {
+            "type": "range",
+            "id": "carousel_interval",
+            "label": "Autoplay interval (sec)",
+            "min": 1,
+            "max": 10,
+            "default": 5,
+            "step": 1
+        },
+        {
+            "type": "select",
+            "id": "carousel_per_move",
+            "label": "Per move",
+            "info": "Number of slides to move.",
+            "default": "1",
+            "options": [
+                { "value": "0", "label": "All in view" },
+                { "value": "1", "label": "One by one" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_rewind",
+            "label": "Rewind",
+            "default": true,
+            "info": "Slide back to the first slide"
+        },
+        {
+            "type": "checkbox",
+            "id": "carousel_loop",
+            "label": "Loop",
+            "default": false,
+            "info": "Infinite carousel, it will not rewind back to the first slide"
+        },
+        {
+            "type": "header",
+            "content": "Breakpoints",
+            "info": "Adjust items per slide based on screen resolution"
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_xs",
+            "label": "Items per slide / xs",
+            "info": "Screen width: less than 576px",
+            "min": 1,
+            "max": 3,
+            "step": 1,
+            "default": 1
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_sm",
+            "label": "Items per slide / sm",
+            "info": "Screen width: ≥576px",
+            "min": 1,
+            "max": 3,
+            "step": 1,
+            "default": 2
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_md",
+            "label": "Items per slide / md",
+            "info": "Screen width: ≥768px",
+            "min": 1,
+            "max": 4,
+            "step": 1,
+            "default": 2
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_lg",
+            "label": "Items per slide / lg",
+            "info": "Screen width: ≥992px",
+            "min": 1,
+            "max": 6,
+            "step": 1,
+            "default": 3
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_xl",
+            "label": "Items per slide / xl",
+            "info": "Screen width: ≥1200px",
+            "min": 1,
+            "max": 6,
+            "step": 1,
+            "default": 4
+        },
+        {
+            "type": "range",
+            "id": "breakpoint_xxl",
+            "label": "Items per slide / xxl",
+            "info": "Screen width: ≥1400px",
+            "min": 1,
+            "max": 8,
+            "step": 1,
+            "default": 4
+        },
+        {
+            "type": "header",
+            "content": "'View more' Button"
+        },
+        {
+            "type": "checkbox",
+            "id": "btn_show",
+            "label": "Show button",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Button text",
+            "default": "Read all reviews"
+        },
+        {
+            "type": "url",
+            "id": "btn_url",
+            "label": "Button URL"
+        },
+        {
+            "type": "select",
+            "id": "btn_color",
+            "label": "Button color",
+            "default": "btn-primary",
+            "options": [
+                { "group": "Normal", "value": "btn-link", "label": "Link" },
+                { "group": "Normal", "value": "btn-light", "label": "Light" },
+                { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                { "group": "Normal", "value": "btn-success", "label": "Success" },
+                { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                { "group": "Normal", "value": "btn-info", "label": "Info" },
+                { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "item",
+            "name": "Item",
+            "settings": [
+                {
+                    "type": "header",
+                    "content": "General"
+                },
+                {
+                    "type": "select",
+                    "id": "text_align",
+                    "label": "Text align",
+                    "default": "text-start",
+                    "options": [
+                        { "value": "text-start", "label": "Left" },
+                        { "value": "text-center", "label": "Center" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "shadow",
+                    "label": "Shadow",
+                    "options": [
+                        { "value": "shadow-none", "label": "No shadow" },
+                        { "value": "shadow-sm", "label": "Shadow sm" },
+                        { "value": "shadow", "label": "Shadow" },
+                        { "value": "shadow-lg", "label": "Shadow lg" }
+                    ],
+                    "default": "shadow-sm"
+                },
+                {
+                    "type": "select",
+                    "id": "border_color",
+                    "label": "Border Color",
+                    "options": [
+                        { "value": "", "label": "Default" },
+                        { "value": "border-primary", "label": "Primary" },
+                        { "value": "border-secondary", "label": "Secondary" },
+                        { "value": "border-dark", "label": "Dark" },
+                        { "value": "border-success", "label": "Success" },
+                        { "value": "border-warning", "label": "Warning" },
+                        { "value": "border-danger", "label": "Danger" },
+                        { "value": "border-info", "label": "Info" }
+                    ],
+                    "default": ""
+                },
+                {
+                    "type": "range",
+                    "id": "border_width",
+                    "label": "Border width",
+                    "min": 0,
+                    "max": 10,
+                    "step": 1,
+                    "default": 1
+                },
+                {
+                    "type": "header",
+                    "content": "Image"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "img",
+                    "label": "Image"
+                },
+                {
+                    "type": "text",
+                    "id": "img_width",
+                    "label": "Image width (px)",
+                    "default": "70"
+                },
+                {
+                    "type": "text",
+                    "id": "img_height",
+                    "label": "Image height (px)",
+                    "default": "70"
+                },
+                {
+                    "type": "header",
+                    "content": "Text"
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "John Doe"
+                },
+                {
+                    "type": "select",
+                    "id": "title_size",
+                    "label": "Title size",
+                    "default": "h5",
+                    "options": [
+                        { "group": "Heading", "value": "h1", "label": "H1" },
+                        { "group": "Heading", "value": "h2", "label": "H2" },
+                        { "group": "Heading", "value": "h3", "label": "H3" },
+                        { "group": "Heading", "value": "h4", "label": "H4" },
+                        { "group": "Heading", "value": "h5", "label": "H5" },
+                        { "group": "Heading", "value": "h6", "label": "H6" }
+                    ]
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_stars",
+                    "label": "Show stars",
+                    "default": true
+                },
+                {
+                    "type": "color",
+                    "id": "star_color",
+                    "label": "Star color",
+                    "default": "#ffb81c"
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description",
+                    "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+                },
+                {
+                    "type": "select",
+                    "id": "description_size",
+                    "label": "Description size",
+                    "default": "fs-6",
+                    "options": [
+                        { "value": "fs-1", "label": "fs-1" },
+                        { "value": "fs-2", "label": "fs-2" },
+                        { "value": "fs-3", "label": "fs-3" },
+                        { "value": "fs-4", "label": "fs-4" },
+                        { "value": "fs-5", "label": "fs-5" },
+                        { "value": "fs-6", "label": "fs-6" }
+                    ]
+                },
+                {
+                    "type": "header",
+                    "content": "Button"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_text",
+                    "label": "Button text",
+                    "default": "Learn more",
+                    "info": "Leave empty to disable"
+                },
+                {
+                    "type": "url",
+                    "id": "btn_url",
+                    "label": "Button URL"
+                },
+                {
+                    "type": "select",
+                    "id": "btn_color",
+                    "label": "Button color",
+                    "default": "btn-primary",
+                    "options": [
+                        { "group": "Normal", "value": "btn-link", "label": "Link" },
+                        { "group": "Normal", "value": "btn-light", "label": "Light" },
+                        { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                        { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                        { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                        { "group": "Normal", "value": "btn-success", "label": "Success" },
+                        { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                        { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                        { "group": "Normal", "value": "btn-info", "label": "Info" },
+                        { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                        { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                        { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                        { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                        { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                        { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                        { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                        { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "btn_size",
+                    "label": "Button size",
+                    "default": "btn-md",
+                    "options": [
+                        { "value": "btn-sm", "label": "Small" },
+                        { "value": "btn-md", "label": "Normal" },
+                        { "value": "btn-lg", "label": "Large" }
+                    ]
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Testimonials",
+            "category": "General"
+        }
+    ]
+}
+{% endschema %}

@@ -1,0 +1,9 @@
+{% liquid
+    assign block = section.blocks | where: 'type', 'liquid_code' | first
+%}
+
+{% if block and position == block.settings.position %}
+    <div class="product-liquid-code mb-6">
+        {{ block.settings.liquid }}
+    </div>
+{% endif %}

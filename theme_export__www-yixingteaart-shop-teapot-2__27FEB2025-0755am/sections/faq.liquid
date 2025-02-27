@@ -1,0 +1,480 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+
+    case section.settings.img_orientation
+        when 'square'
+            assign img_width  = 900
+            assign img_height = 900
+        when 'landscape'
+            assign img_width  = 900
+            assign img_height = 720
+        when 'landscape-x2'
+            assign img_width  = 900
+            assign img_height = 600
+        when 'potrait'
+            assign img_width  = 720
+            assign img_height = 900
+        when 'potrait-x2'
+            assign img_width  = 600
+            assign img_height = 900
+    endcase
+%}
+
+<section 
+    id="faq-{{ section.id }}" 
+    class="faq enter-view {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="container">
+        <div class="mx-auto" style="max-width: {{ section.settings.max_width }}px">
+            <div class="row align-items-center {{ section.settings.img_align_desktop }}">
+                {% unless section.settings.image == blank %}
+                    <div class="col-lg-6 mb-6 mb-lg-0">
+                        <div 
+                            class="animate__animated animate__faster opacity-0"
+                            data-animate-class="animate__fadeIn"
+                            style="animation-delay: 0ms">
+                            <img
+                                class="img-fluid rounded {{ section.settings.img_thumbnail }}"
+                                src="{{ section.settings.image.src | image_url: width: img_width, height: img_height, crop: section.settings.img_crop }}"
+                                alt="{{ section.settings.image.alt | escape }}"
+                                width="{{ img_width }}"
+                                height="{{ img_height }}"
+                                loading="lazy">
+                        </div>
+                    </div>
+                {% endunless %}
+                <div class="{% if section.settings.image == blank %}col-lg-12{% else %}col-lg-6{% endif %}">
+                    {% unless section.settings.title == blank %}
+                        <h2 class="title mb-5 {{ section.settings.text_align }} {{ section.settings.title_size }}">
+                            {{ section.settings.title }}
+                        </h2>
+                    {% endunless %}
+                    {% unless section.settings.description == blank %}
+                        <div class="description text-muted rte mt-n3 mb-7 {{ section.settings.text_align }} {{ section.settings.description_size }}">
+                            {{ section.settings.description }}
+                        </div>
+                    {% endunless %}
+                    <div 
+                        id="faq-accordion-{{ section.id }}" 
+                        class="accordion {{ section.settings.accordion_style }}">
+                        {% for block in section.blocks %}
+                            <div class="accordion-item" {{ block.shopify_attributes }}>
+                                <h3 
+                                    id="faq-accordion-{{ section.id }}-heading-{{ forloop.index }}" 
+                                    class="accordion-header">
+                                    <button 
+                                        class="accordion-button {% unless forloop.first %}collapsed{% endunless %}" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#faq-accordion-{{ section.id }}-collapse-{{ forloop.index }}" 
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="faq-accordion-{{ section.id }}-collapse-{{ forloop.index }}">
+                                        {{ block.settings.title | escape }}
+                                    </button>
+                                </h3>
+                                <div 
+                                    id="faq-accordion-{{ section.id }}-collapse-{{ forloop.index }}" 
+                                    class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                    aria-labelledby="faq-accordion-{{ section.id }}-heading-{{ forloop.index }}" 
+                                    data-bs-parent="#faq-accordion-{{ section.id }}">
+                                    <div class="accordion-body rte pt-4 pb-6">
+                                        <div class="row align-items-center {{ block.settings.img_align_desktop }}">
+                                            {% unless block.settings.img == blank %}
+                                                {% liquid
+                                                        case block.settings.img_orientation
+                                                            when 'square'
+                                                                assign img_width  = 900
+                                                                assign img_height = 900
+                                                            when 'landscape'
+                                                                assign img_width  = 900
+                                                                assign img_height = 720
+                                                            when 'landscape-x2'
+                                                                assign img_width  = 900
+                                                                assign img_height = 600
+                                                            when 'potrait'
+                                                                assign img_width  = 720
+                                                                assign img_height = 900
+                                                            when 'potrait-x2'
+                                                                assign img_width  = 600
+                                                                assign img_height = 900
+                                                        endcase
+                                                %}
+                                                <div class="col-lg-6 mb-6 mb-lg-0">
+                                                    <img
+                                                        class="img-fluid rounded {{ block.settings.img_thumbnail }}"
+                                                        src="{{ block.settings.img.src | image_url: width: img_width, height: img_height, crop: block.settings.img_crop }}"
+                                                        alt="{{ block.settings.img.alt | escape }}"
+                                                        width="{{ img_width }}"
+                                                        height="{{ img_height }}"
+                                                        loading="lazy">
+                                                </div>
+                                            {% endunless %}
+                                            <div class="{% if block.settings.img == blank %}col-lg-12{% else %}col-lg-6{% endif %}">
+                                                {{ block.settings.description }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+        {% for block in section.blocks %}
+            {
+                "@type": "Question",
+                "name": {{ block.settings.title | json }},
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": {{ block.settings.description | json }}
+                }
+            }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+        ]
+    }
+</script>
+
+{% schema %}
+{
+    "name": "F.A.Q",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max width (px)",
+            "info": "Adjust container width (in pixels)",
+            "default": "960"
+        },
+        {
+            "type": "select",
+            "id": "accordion_style",
+            "label": "Accordion style",
+            "default": "accordion-default",
+            "options": [
+                { "value": "accordion-default", "label": "Default" },
+                { "value": "accordion-flush", "label": "Flush (borderless)" },
+                { "value": "accordion-fancy", "label": "Fancy" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Header"
+        },
+        {
+            "type": "select",
+            "id": "text_align",
+            "label": "Text align",
+            "default": "text-center",
+            "options": [
+                { "value": "text-start", "label": "Left" },
+                { "value": "text-center", "label": "Center" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "F.A.Q"
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title Size",
+            "default": "h2",
+            "options": [
+                {  "value": "h1", "label": "H1" },
+                {  "value": "h2", "label": "H2" },
+                {  "value": "h3", "label": "H3" },
+                {  "value": "h4", "label": "H4" },
+                {  "value": "h5", "label": "H5" },
+                {  "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description (optional)",
+            "default": "<p>Add on optional description to this section</p>"
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Image"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Note: Image is optional and isually it is not needed. Also, you may need to adjust the 'Max width' setting above if you set an image."
+        },
+        {
+            "type": "select",
+            "id": "img_orientation",
+            "label": "Image orientation",
+            "default": "landscape",
+            "options": [
+                { "value": "square", "label": "Square" },
+                { "value": "landscape", "label": "Landscape" },
+                { "value": "landscape-x2", "label": "Landscape 2x" },
+                { "value": "potrait", "label": "Potrait" },
+                { "value": "potrait-x2", "label": "Potrait 2x" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "img_crop",
+            "label": "Image crop",
+            "default": "center",
+            "options": [
+                { "value": "top", "label": "Top" },
+                { "value": "center", "label": "Center" },
+                { "value": "bottom", "label": "Bottom" },
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "img_thumbnail",
+            "label": "Image thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "img_align_desktop",
+            "label": "Image alignment (desktop)",
+            "default": "flex-lg-row",
+            "options": [
+                { "value": "flex-lg-row", "label": "Left" },
+                { "value": "flex-lg-row-reverse", "label": "Right" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "text",
+            "name": "Item",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title"
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "header",
+                    "content": "Image"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "img",
+                    "label": "Image"
+                },
+                {
+                    "type": "select",
+                    "id": "img_orientation",
+                    "label": "Image orientation",
+                    "default": "landscape",
+                    "options": [
+                        { "value": "square", "label": "Square" },
+                        { "value": "landscape", "label": "Landscape" },
+                        { "value": "landscape-x2", "label": "Landscape 2x" },
+                        { "value": "potrait", "label": "Potrait" },
+                        { "value": "potrait-x2", "label": "Potrait 2x" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "img_crop",
+                    "label": "Image crop",
+                    "default": "center",
+                    "options": [
+                        { "value": "top", "label": "Top" },
+                        { "value": "center", "label": "Center" },
+                        { "value": "bottom", "label": "Bottom" },
+                        { "value": "left", "label": "Left" },
+                        { "value": "right", "label": "Right" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "img_thumbnail",
+                    "label": "Image thumbnail",
+                    "default": "img-thumbnail",
+                    "options": [
+                        { "value": "", "label": "None" },
+                        { "value": "img-thumbnail", "label": "Thumbnail" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "img_align_desktop",
+                    "label": "Image alignment (desktop)",
+                    "default": "flex-lg-row",
+                    "options": [
+                        { "value": "flex-lg-row", "label": "Left" },
+                        { "value": "flex-lg-row-reverse", "label": "Right" }
+                    ]
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "F.A.Q",
+            "category": "Text",
+            "blocks": [
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "Where do you ship?",
+                        "description": "<p>We ship all around the world... Please provide here you own shipping information, including times, prices, options etc.</p>"
+                    }
+                },
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "How long will it take to receive my order",
+                        "description": "<p>This depends on whether it is an International or a Domestic order. All orders within the U.S. are considered domestic orders and they are shipped and delivered within 2-5 business days. Please see International Orders for more details.</p>"
+                    }
+                },
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "What payment methods do you support?",
+                        "description": "<p>We accept PayPal, Visa, MasterCard, Discover, and American Express but feel free to contact us for other payment options.</p>"
+                    }
+                },
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "How can I track my order?",
+                        "description": "<p>We will send tracking information to the e-mail address associated with your order once the item has shipped. If you have not received your tracking information and it has been over 2 business day, please contact us at (012) 123 - 4567</p>"
+                    }
+                },
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "Can I order as a gift for someone else?",
+                        "description": "<p>When ordering as a gift for someone, be sure to enter in your email address to receive all summary information but enter in the recipient’s name and shipping information. We will be sure to keep all prices and receipts out of the package.</p>"
+                    }
+                },
+                {
+                    "type": "text",
+                    "settings": {
+                        "title": "How can I get a refund for my order?",
+                        "description": "<p>If for any reason you are not completely satisfied with your purchase, within 30 days of placing your order, we will refund you for your purchase with no questions asked.</p>"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

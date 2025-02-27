@@ -1,0 +1,73 @@
+{% liquid 
+    assign current_variant = product.selected_or_first_available_variant
+%}
+
+    <div id="product-store-availability-wrapper"> 
+        {% if current_variant.store_availabilities.size > 0 %}
+            <div
+                id="product-store-availability" 
+                class="card mb-6">
+                <div class="card-header">
+                    <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-xl-between">
+                        <h2 id="product-store-availability-title" class="h4 mb-0">
+                            {{ 'product.store_availability.card_title' | t }}
+                        </h2>
+                        {% if current_variant.available %}
+                            <p class="mb-0 text-muted">
+                                {{ 'product.store_availability.card_subtitle' | t }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled my-1" aria-labelledby="product-store-availability-title">
+                        {% for store_availability in current_variant.store_availabilities %}
+                            <li class="{% unless forloop.last %}pb-5 mb-5 border-bottom{% endunless %}">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0 me-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-shop" viewBox="0 0 16 16">
+                                            <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3zm3 0h-2v3h2v-3z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-xl-between w-100">
+                                        <div class="">
+                                            <h3 class="h5 mb-1">
+                                                {{ store_availability.location.name }}
+                                            </h3>
+                                            <address class="text-muted small mb-1">
+                                                {{ store_availability.location.address.address1 }},
+                                                {% unless store_availability.location.address.address2 == blank %}
+                                                    {{ store_availability.location.address.address2 }}, 
+                                                {% endunless %}
+                                                {{ store_availability.location.address.zip }},
+                                                {{ store_availability.location.address.city }},
+                                                {{ store_availability.location.address.country }}
+                                            </address>
+                                            {% unless store_availability.location.address.phone == blank %}
+                                                <p class="small mb-0">
+                                                    <a href="tel:{{ store_availability.location.address.phone }}" class="link-dark">
+                                                        {{ store_availability.location.address.phone }}
+                                                    </a>
+                                                </p>
+                                            {% endunless %}
+                                        </div>
+                                        <div class="mt-2 mt-xl-0 ms-xl-4">
+                                            {% if store_availability.available %}
+                                                <p class="text-primary lh-sm small mb-0">
+                                                    {{ store_availability.pick_up_time }}
+                                                </p>
+                                            {% else %}
+                                                <span class="price-badge-sold-out badge bg-secondary">
+                                                    {{ 'product.sold_out' | t }}
+                                                </span>        
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>

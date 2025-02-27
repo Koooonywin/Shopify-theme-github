@@ -1,0 +1,161 @@
+/*
+    © 2023 EcomGraduates.com
+    https://www.ecomgraduates.com
+*/
+
+{% comment %} 
+    Fonts 
+{% endcomment %}
+{% if settings.font_headings_custom == blank %}
+    {{ settings.font_headings | font_face: font_display: 'swap' }}
+{% else %}
+    @font-face {
+        font-family: "{{ settings.font_headings_custom | split: '.' | first }}";
+        src: url('{{ settings.font_headings_custom | file_url }}') format('{{ settings.font_headings_custom | split: '.' | last }}');
+        font-display: swap;
+    }
+{% endif %}
+
+{% unless settings.font_body.system %}
+    {{ settings.font_body | font_face: font_display: 'swap' }}
+    {{ settings.font_body | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+    {{ settings.font_body | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+{% endunless %}
+
+{% comment %} 
+    Variables
+{% endcomment %}
+:root {
+    --bs-primary: {{ settings.color_primary }};
+    --bs-primary-rgb: {{ settings.color_primary | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-primary-lighten-5: {{ settings.color_primary | color_lighten: 5 }};
+    --bs-primary-lighten-10: {{ settings.color_primary | color_lighten: 5 }};
+    --bs-primary-darken-5:  {{ settings.color_primary | color_darken: 5 }};
+    --bs-primary-darken-10:  {{ settings.color_primary | color_darken: 10 }};
+
+    --bs-secondary: {{ settings.color_secondary }};
+    --bs-secondary-rgb: {{ settings.color_secondary | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-secondary-lighten-5: {{ settings.color_secondary | color_lighten: 5 }};
+    --bs-secondary-lighten-10: {{ settings.color_secondary | color_lighten: 10 }};
+    --bs-secondary-darken-5:  {{ settings.color_secondary | color_darken: 5 }};
+    --bs-secondary-darken-10:  {{ settings.color_secondary | color_darken: 10 }};
+
+    --bs-dark: {{ settings.color_dark }};
+    --bs-dark-rgb: {{ settings.color_dark | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-dark-lighten-5: {{ settings.color_dark | color_lighten: 5 }};
+    --bs-dark-lighten-10: {{ settings.color_dark | color_lighten: 10 }};
+    --bs-dark-darken-5:  {{ settings.color_dark | color_darken: 5 }};
+    --bs-dark-darken-10:  {{ settings.color_dark | color_darken: 10 }};
+
+    --bs-light: {{ settings.color_light }};
+    --bs-light-rgb: {{ settings.color_light | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-light-lighten-5: {{ settings.color_light | color_lighten: 5 }};
+    --bs-light-lighten-10: {{ settings.color_light | color_lighten: 10 }};
+    --bs-light-darken-5:  {{ settings.color_light | color_darken: 5 }};
+    --bs-light-darken-10:  {{ settings.color_light | color_darken: 10 }};
+
+    --bs-body-bg: {{ settings.color_body_bg }};
+    --bs-body-bg-rgb: {{ settings.color_body_bg | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-body-color: {{ settings.color_body_text }};
+    --bs-body-color-rgb: {{ settings.color_body_text | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+
+    --bs-border-color: var(--bs-light-darken-10);
+    --bs-border-radius: {{ settings.border_radius }};
+
+    --bs-link-color: var(--bs-primary);
+    --bs-link-hover-color: var(--bs-primary-darken-10);
+
+    --bs-success: {{ settings.color_success }};
+    --bs-success-darken: {{ settings.color_success | color_darken: 10 }};
+    --bs-success-rgb: {{ settings.color_success | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-danger: {{ settings.color_danger }};
+    --bs-danger-darken: {{ settings.color_danger | color_darken: 10 }};
+    --bs-danger-rgb: {{ settings.color_danger | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-warning: {{ settings.color_warning }};
+    --bs-warning-darken: {{ settings.color_warning | color_darken: 20 }};
+    --bs-warning-rgb: {{ settings.color_warning | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-info: {{ settings.color_info }};
+    --bs-info-darken: {{ settings.color_info | color_darken: 20 }};
+    --bs-info-rgb: {{ settings.color_info | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+
+    {% if settings.font_headings_custom == blank %}
+        --bs-headings-font-family: {{ settings.font_headings.family }}, {{ settings.font_headings.fallback_families }};
+        --bs-headings-font-weight: {{ settings.font_headings.weight }};
+    {% else %}
+        --bs-headings-font-family: "{{ settings.font_headings_custom | split: '.' | first }}", sans-serif;
+    {% endif %}
+
+    {% unless settings.font_body.system %}
+        --bs-body-font-family:  {{ settings.font_body.family }}, {{ settings.font_body.fallback_families }};
+    {% endunless %}
+}
+
+
+{% comment %} 
+    Buttons
+{% endcomment %}
+body .btn {
+    letter-spacing: {{ settings.buttons_letter_spacing }}rem;
+    text-transform: {{ settings.buttons_text_transform }};
+    font-weight: {{ settings.buttons_font_weight }};
+}
+
+body .btn-md {
+    --bs-btn-padding-x: {{ settings.buttons_padding_x }}rem;
+    --bs-btn-padding-y: {{ settings.buttons_padding_y }}rem;
+}
+
+body .btn-lg {
+    --bs-btn-padding-x: {{ settings.buttons_padding_x | times: 1.5 }}rem;
+    --bs-btn-padding-y: {{ settings.buttons_padding_y | times: 1.5 }}rem;
+}
+
+{% if settings.buttons_bg_gradient %}
+    .btn {
+        background-image: var(--bs-gradient);
+    }
+{% endif %}
+
+
+{% comment %} 
+    Forms
+{% endcomment %}
+.form-control-md,
+.form-select-md {
+    padding-left: {{ settings.buttons_padding_x }}rem;
+    padding-right: {{ settings.buttons_padding_x }}rem;
+    padding-top: {{ settings.buttons_padding_y }}rem;
+    padding-bottom: {{ settings.buttons_padding_y }}rem;
+}
+
+[dir="ltr"] .form-select-md {
+    padding-right: 2.5rem;
+}
+
+[dir="rtl"] .form-select-md {
+    padding-left: 2.5rem;
+}
+
+{% comment %} 
+    Offcanvas/Modal
+{% endcomment %}
+body .offcanvas-backdrop,
+body .modal-backdrop {
+    background-color: rgba(0, 0, 0, {{ settings.offcanvas_backdrop_opacity | divided_by: 100.00 }});
+    {% if settings.offcanvas_backdrop_blur %}
+        backdrop-filter: blur(5px);
+    {% endif %}
+}
+
+
+{% comment %} 
+    Prefer dark design
+{% endcomment %}
+.prefer-dark-design:root {
+    --bs-success: #81C784;
+    --bs-success-rgb: {{ '#81C784' | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --bs-danger: #EF5350;
+    --bs-danger-rgb: {{ '#EF5350' | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+
+    --bs-border-color: rgba(255, 255, 255, .1);
+}

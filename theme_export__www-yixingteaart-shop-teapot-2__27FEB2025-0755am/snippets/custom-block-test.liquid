@@ -1,0 +1,28 @@
+{% assign blocks = section.blocks %}
+{% for block in blocks %}
+  {% if block.type == 'value_props' %}
+    {% assign items = block.settings.content | split: ',' %}
+    {% render 'product-review-quote', items: items %}
+  {% endif %}
+
+  {% if block.type == 'liquid_code' %}
+    <div class="product-liquid-code mb-6">
+      {{ block.settings.liquid }}
+    </div>
+  {% endif %}
+  {% if block.type == 'product_form' %}
+    {% render 'product-form' %}
+  {% endif %}
+  {% if block.type == 'product_accordian' %}
+    {% render 'product-accordion' %}
+  {% endif %}
+  {% if block.type == 'trust_badges' %}
+    {% render 'product-trust-badges' %}
+  {% endif %}
+  {% if block.type == 'show_store_availability' %}
+    {% render 'product-store-availability' %}
+  {% endif %}
+  {% if block.type == 'qty_breaks' %}
+    {% render 'product-block-qty-breaks', block: block %}
+  {% endif %}
+{% endfor %}

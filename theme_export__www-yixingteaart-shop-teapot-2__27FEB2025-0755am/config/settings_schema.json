@@ -1,0 +1,974 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "ecomify-lite",
+    "theme_version": "1.0.0",
+    "theme_author": "EcomGraduates.com",
+    "theme_documentation_url": "https:\/\/docs.ecomgraduates.com\/ecomify-theme",
+    "theme_support_url": "https:\/\/www.ecomgraduates.com"
+  },
+  {
+    "name": "Styling",
+    "settings": [
+      {
+        "type": "header",
+        "content": "--- Colors ---"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary",
+        "default": "#d32f2f"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary",
+        "default": "#455a64"
+      },
+      {
+        "type": "color",
+        "id": "color_dark",
+        "label": "Dark",
+        "default": "#212529"
+      },
+      {
+        "type": "color",
+        "id": "color_light",
+        "label": "Light",
+        "default": "#f8f9fa"
+      },
+      {
+        "type": "color",
+        "id": "color_body_bg",
+        "label": "Body bg",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_body_text",
+        "label": "Body text",
+        "default": "#212529"
+      },
+      {
+        "type": "header",
+        "content": "Alert colors"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "default": "#198754"
+      },
+      {
+        "type": "color",
+        "id": "color_danger",
+        "label": "Danger",
+        "default": "#dc3545"
+      },
+      {
+        "type": "color",
+        "id": "color_warning",
+        "label": "Warning",
+        "default": "#ffc107"
+      },
+      {
+        "type": "color",
+        "id": "color_info",
+        "label": "Info",
+        "default": "#0dcaf0"
+      },
+      {
+        "type": "checkbox",
+        "id": "color_prefer_dark",
+        "label": "Prefer dark design",
+        "default": false,
+        "info": "Enable this setting if want to switch to a dark based design. It will invert some elements to a dark scheme, like megamenu, dropdowns, etc. Note: You still need to adjust the color settings above, like body-bg, body-text, etc, to match your dark design."
+      },
+      {
+        "type": "header",
+        "content": "--- Typography ---"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_headings",
+        "label": "Headings font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "text",
+        "id": "font_headings_custom",
+        "label": "Headings font (custom)",
+        "info": "Upload your font file into the [Files](https:\/\/www.shopify.com\/admin\/content\/files) section and enter here the exact file name. E.g. 'ubuntu-regular.woff2'. For more info please refer to our documentation video."
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body font",
+        "default": "sans-serif",
+        "info": "We recommend that you keep the default 'sans-serif' system font. Beside that your store will load faster, all the corresponding font-weights, italic variant, etc, will display with better accuracy."
+      },
+      {
+        "type": "header",
+        "content": "--- General ---"
+      },
+      {
+        "type": "select",
+        "id": "border_radius",
+        "label": "Border radius",
+        "default": "0.375rem",
+        "info": "Applies to various elements like images, buttons, cards, dropdowns, etc.",
+        "options": [
+          {
+            "value": "0",
+            "label": "None"
+          },
+          {
+            "value": "0.25rem",
+            "label": "Rounded sm"
+          },
+          {
+            "value": "0.375rem",
+            "label": "Rounded md"
+          },
+          {
+            "value": "0.5rem",
+            "label": "Rounded lg"
+          },
+          {
+            "value": "1rem",
+            "label": "Rounded xl"
+          },
+          {
+            "value": "2rem",
+            "label": "Rounded 2xl"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "--- Buttons ---"
+      },
+      {
+        "type": "range",
+        "id": "buttons_padding_x",
+        "label": "Horizontal padding",
+        "default": 0.8,
+        "min": 0.5,
+        "max": 2.0,
+        "step": 0.1,
+        "unit": "rem"
+      },
+      {
+        "type": "range",
+        "id": "buttons_padding_y",
+        "label": "Vertical padding",
+        "default": 0.4,
+        "min": 0.2,
+        "max": 1.0,
+        "step": 0.1,
+        "unit": "rem"
+      },
+      {
+        "type": "range",
+        "id": "buttons_letter_spacing",
+        "label": "Letter spacing",
+        "default": 0.0,
+        "min": 0.0,
+        "max": 0.4,
+        "step": 0.1,
+        "unit": "rem"
+      },
+      {
+        "type": "select",
+        "id": "buttons_text_transform",
+        "label": "Text transform",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Normal"
+          },
+          {
+            "value": "capitalize",
+            "label": "Capitalize"
+          },
+          {
+            "value": "lowercase",
+            "label": "Lowercase"
+          },
+          {
+            "value": "uppercase",
+            "label": "Uppercase"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "buttons_font_weight",
+        "label": "Font weight",
+        "default": "500",
+        "options": [
+          {
+            "value": "400",
+            "label": "Normal"
+          },
+          {
+            "value": "500",
+            "label": "Medium"
+          },
+          {
+            "value": "600",
+            "label": "Semi-bold"
+          },
+          {
+            "value": "700",
+            "label": "Bold"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "buttons_bg_gradient",
+        "label": "Background grdient",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "--- Offcanvas ---"
+      },
+      {
+        "type": "select",
+        "id": "offcanvas_opening_direction",
+        "label": "Offcanvas opening direction",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Default (from side)"
+          },
+          {
+            "value": "offcanvas-from-bottom",
+            "label": "From Bottom"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "offcanvas_header_bg",
+        "label": "Header bg color",
+        "default": "bg-dark text-white",
+        "options": [
+          {
+            "group": "Inherit",
+            "value": "",
+            "label": "Body"
+          },
+          {
+            "group": "Light",
+            "value": "bg-white text-dark",
+            "label": "White"
+          },
+          {
+            "group": "Light",
+            "value": "bg-light text-body",
+            "label": "Light"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-primary text-white",
+            "label": "Primary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-secondary text-white",
+            "label": "Secondary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-dark text-white",
+            "label": "Dark"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-success text-white",
+            "label": "Success"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-warning text-dark",
+            "label": "Warning"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-danger text-white",
+            "label": "Danger"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-info text-white",
+            "label": "Info"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "offcanvas_header_title_size",
+        "label": "Header title size",
+        "default": "h5",
+        "options": [
+          {
+            "value": "h1",
+            "label": "H1"
+          },
+          {
+            "value": "h2",
+            "label": "H2"
+          },
+          {
+            "value": "h3",
+            "label": "H3"
+          },
+          {
+            "value": "h4",
+            "label": "H4"
+          },
+          {
+            "value": "h5",
+            "label": "H5"
+          },
+          {
+            "value": "h6",
+            "label": "H6"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "offcanvas_backdrop_opacity",
+        "label": "Backdrop opacity (%)",
+        "default": 50,
+        "min": 0,
+        "max": 100
+      },
+      {
+        "type": "checkbox",
+        "id": "offcanvas_backdrop_blur",
+        "label": "Backdrop blur",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "offcanvas_img_orientation",
+        "label": "Image orientation",
+        "default": "square",
+        "options": [
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "landscape",
+            "label": "Landscape"
+          },
+          {
+            "value": "potrait",
+            "label": "Potrait"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "offcanvas_img_thumbnail",
+        "label": "Image thumbnail",
+        "default": "img-thumbnail",
+        "options": [
+          {
+            "value": "",
+            "label": "None"
+          },
+          {
+            "value": "img-thumbnail",
+            "label": "Thumbnail"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "--- Favicon ---"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon image",
+        "info": "Will be scaled down to 32x32"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "header",
+        "content": "--- Cart Drawer ---"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_show_cart_link",
+        "label": "Show 'View cart' link",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_show_payment_icons",
+        "label": "Show payment icons",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_show_note",
+        "label": "Show Note field",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_show_shipping_rates",
+        "label": "Show 'Shipping rates' feature",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "cart_drawer_shipping_rates_btn_color",
+        "label": "Button color",
+        "default": "btn-outline-secondary",
+        "options": [
+          {
+            "group": "Normal",
+            "value": "btn-link",
+            "label": "Link"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-light",
+            "label": "Light"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-dark",
+            "label": "Dark"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-primary",
+            "label": "Primary"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-secondary",
+            "label": "Secondary"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-success",
+            "label": "Success"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-danger",
+            "label": "Danger"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-warning",
+            "label": "Warning"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-info",
+            "label": "Info"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-light",
+            "label": "Light Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-dark",
+            "label": "Dark Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-primary",
+            "label": "Primary Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-secondary",
+            "label": "Secondary Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-success",
+            "label": "Success Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-danger",
+            "label": "Danger Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-warning",
+            "label": "Warning Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-info",
+            "label": "Info Outline"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "--- Cart Goal ---"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_goal_enable",
+        "label": "Enable cart goal",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_goal_value",
+        "label": "Goal value",
+        "default": "100"
+      },
+      {
+        "type": "richtext",
+        "id": "cart_goal_description_before",
+        "label": "Description - Goal NOT completed",
+        "default": "<p>You're <strong>[amount]<\/strong> away from <strong>FREE SHIPPING!<\/strong><\/p>"
+      },
+      {
+        "type": "select",
+        "id": "cart_goal_bg_color_before",
+        "label": "Color - Goal NOT completed",
+        "default": "bg-warning",
+        "options": [
+          {
+            "group": "Dark",
+            "value": "bg-primary",
+            "label": "Primary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-secondary",
+            "label": "Secondary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-dark",
+            "label": "Dark"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-success",
+            "label": "Success"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-warning",
+            "label": "Warning"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-danger",
+            "label": "Danger"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-info",
+            "label": "Info"
+          }
+        ]
+      },
+      {
+        "type": "richtext",
+        "id": "cart_goal_description_after",
+        "label": "Description - Goal completed",
+        "default": "<p>Congrats! You're eligible for <strong>FREE SHIPPING.<\/strong><\/p>"
+      },
+      {
+        "type": "select",
+        "id": "cart_goal_bg_color_after",
+        "label": "Color - Goal completed",
+        "default": "bg-success",
+        "options": [
+          {
+            "group": "Dark",
+            "value": "bg-primary",
+            "label": "Primary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-secondary",
+            "label": "Secondary"
+          },
+          {
+            "group": "Dark",
+            "value": "bg-dark",
+            "label": "Dark"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-success",
+            "label": "Success"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-warning",
+            "label": "Warning"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-danger",
+            "label": "Danger"
+          },
+          {
+            "group": "Alert",
+            "value": "bg-info",
+            "label": "Info"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      {
+        "type": "header",
+        "content": "--- Predictive Search ---"
+      },
+      {
+        "type": "checkbox",
+        "id": "search_collections",
+        "label": "Search in collections",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "search_pages",
+        "label": "Search in pages",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "search_articles",
+        "label": "Search in blog posts",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "search_speech",
+        "label": "Enable 'Speech' button",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "--- Popular products ---"
+      },
+      {
+        "type": "checkbox",
+        "id": "search_show_popular_products",
+        "label": "Show popular products",
+        "info": "Will show when no search term is written",
+        "default": true
+      },
+      {
+        "type": "product_list",
+        "id": "search_popular_products",
+        "label": "Select products"
+      },
+      {
+        "type": "header",
+        "content": "--- Product ---"
+      },
+      {
+        "type": "select",
+        "id": "search_title_truncate",
+        "label": "Truncate title",
+        "default": "",
+        "info": "Useful if your product titles are long",
+        "options": [
+          {
+            "value": "",
+            "label": "No (default)"
+          },
+          {
+            "value": "text-truncate",
+            "label": "One line"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "search_show_atc_form",
+        "label": "Show 'Add to cart' form",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Enter the full URL for each social media site below. E.g: https:\/\/www.facebook.com\/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "Twitter"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat",
+        "label": "Snapchat"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "Youtube"
+      },
+      {
+        "type": "text",
+        "id": "social_linkedin",
+        "label": "Linkedin"
+      },
+      {
+        "type": "text",
+        "id": "social_discord",
+        "label": "Discord"
+      },
+      {
+        "type": "text",
+        "id": "social_whatsapp",
+        "label": "Whatsapp"
+      },
+      {
+        "type": "text",
+        "id": "social_email",
+        "label": "Email"
+      },
+      {
+        "type": "text",
+        "id": "social_phone",
+        "label": "Phone",
+        "info": "tel:+1-123-456–7890"
+      }
+    ]
+  },
+  {
+    "name": "Various",
+    "settings": [
+      {
+        "type": "header",
+        "content": "--- Color Swatches ---"
+      },
+      {
+        "type": "paragraph",
+        "content": "NOTE: Color swatches are used to replace the color product options with their corresponding color\/shade. You must name the color swatch images in the format \"swatch-blue.png\" where \"blue\" is the name of the option handleized. Then upload the images in the [Shopify's files](https:\/\/www.shopify.com\/admin\/settings\/files) section."
+      },
+      {
+        "type": "checkbox",
+        "id": "color_swatches_show",
+        "label": "Show color swatches",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "color_swatches_names",
+        "label": "Color swatches names",
+        "default": "Color,Colour",
+        "info": "Comma separated list of product option names to show as a color swatches"
+      },
+      {
+        "type": "checkbox",
+        "id": "color_swatches_use_variant_images",
+        "label": "Use variant images",
+        "default": false,
+        "info": "Enable this option if you prefer to show the corresponding variant image rather than the custom swatch images."
+      },
+      {
+        "type": "header",
+        "content": "--- Size Buttons ---"
+      },
+      {
+        "type": "paragraph",
+        "content": "NOTE: Size buttons are used to replace product form elements from dropdown select boxes to buttons. Usually they are used for Size options like X, M, L, etc."
+      },
+      {
+        "type": "checkbox",
+        "id": "size_buttons_show",
+        "label": "Show size buttons",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "size_buttons_names",
+        "label": "Size buttons names",
+        "default": "Size,Sizes",
+        "info": "Comma separated list of product option names to show as a size buttons."
+      },
+      {
+        "type": "header",
+        "content": "--- Currency Selector ---"
+      },
+      {
+        "type": "checkbox",
+        "id": "currency_selector_show",
+        "label": "Show currency selector",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "currency_selector_position",
+        "label": "Position",
+        "options": [
+          {
+            "value": "currency-selector-left",
+            "label": "Left"
+          },
+          {
+            "value": "currency-selector-right",
+            "label": "Right"
+          }
+        ],
+        "default": "currency-selector-left"
+      },
+      {
+        "type": "select",
+        "id": "currency_selector_btn_color",
+        "label": "Button color",
+        "default": "btn-light",
+        "options": [
+          {
+            "group": "Normal",
+            "value": "btn-link",
+            "label": "Link"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-light",
+            "label": "Light"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-dark",
+            "label": "Dark"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-primary",
+            "label": "Primary"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-secondary",
+            "label": "Secondary"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-success",
+            "label": "Success"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-danger",
+            "label": "Danger"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-warning",
+            "label": "Warning"
+          },
+          {
+            "group": "Normal",
+            "value": "btn-info",
+            "label": "Info"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-light",
+            "label": "Light Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-dark",
+            "label": "Dark Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-primary",
+            "label": "Primary Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-secondary",
+            "label": "Secondary Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-success",
+            "label": "Success Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-danger",
+            "label": "Danger Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-warning",
+            "label": "Warning Outline"
+          },
+          {
+            "group": "Outline",
+            "value": "btn-outline-info",
+            "label": "Info Outline"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "currency_selector_z_index",
+        "label": "Z-index",
+        "info": "Adjust this value if you are having overlapping issues",
+        "default": "9"
+      }
+    ]
+  }
+]

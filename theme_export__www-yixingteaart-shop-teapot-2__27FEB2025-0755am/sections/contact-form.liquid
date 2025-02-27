@@ -1,0 +1,622 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<section 
+    id="contact-form-{{ section.id }}" 
+    class="contact-form {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="container" style="max-width: {{ section.settings.max_width }}px">
+        
+        <div class="text-center">
+            {% unless section.settings.title == blank %}
+                <h2 class="title mb-4 {{ section.settings.title_size }}">
+                    {{ section.settings.title }}
+                </h2>
+            {% endunless %}
+            {% unless section.settings.description == blank %}
+                <div class="description rte mt-n2 mb-6 text-muted {{ section.settings.description_size }}">
+                    {{ section.settings.description }}
+                </div>
+            {% endunless %}
+        </div>
+
+        {% form 'contact', class: 'contact-form my-4' %}
+            {% if form.posted_successfully? %}
+                <div class="form-success rte alert alert-success mb-6" role="alert">
+                    {{ section.settings.form_success_msg }}
+                </div>
+            {% endif %}
+            {{ form.errors | default_errors }}
+            
+            {% for block in section.blocks %}
+                {% if block.type == 'text' %}
+                    <div class="form-group mb-5" {{ block.shopify_attributes }}>
+                        {% unless block.settings.title == blank %}
+                            <h3 class="title mb-2 {{ block.settings.title_size }}">
+                                {{ block.settings.title }}
+                            </h3>
+                        {% endunless %}
+                        {% unless block.settings.description == blank %}
+                            <div class="description rte text-muted {{ block.settings.description_size }}">
+                                {{ block.settings.description }}
+                            </div>
+                        {% endunless %}
+                    </div>
+                {% elsif block.type == 'input_field' %}
+                    {% liquid 
+                        assign input_name = block.settings.label | handleize
+
+                        if input_name contains 'mail'
+                            assign input_name = 'email'
+                        endif
+                    %}
+                    <div class="form-group mb-4" {{ block.shopify_attributes }}>
+                        {% if block.settings.type == 'date' or block.settings.type == 'time' %}
+                            <label for="input-{{ block.id }}" class="form-label mb-2">
+                                {{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}
+                            </label>
+                        {% endif %}
+                        <input 
+                            id="input-{{ block.id }}"
+                            class="form-control form-control-{{ section.settings.form_fields_size }}" 
+                            type="{{ block.settings.type }}" 
+                            name="contact[{{ input_name }}]"
+                            placeholder="{{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}"
+                            aria-label=" {{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}"
+                            {% if block.settings.required %}required{% endif %}>
+                    </div>
+                {% elsif block.type == 'textarea' %}
+                    <div class="form-group mb-4" {{ block.shopify_attributes }}>
+                        <textarea 
+                            class="form-control form-control-{{ section.settings.form_fields_size }}"
+                            rows="{{ block.settings.rows }}"
+                            name="contact[{{ block.settings.label | handleize }}]"
+                            placeholder="{{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}" 
+                            aria-label="{{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}" 
+                            {% if block.settings.required %}required{% endif %}></textarea>
+                    </div>
+                {% elsif block.type == 'select' %}
+                    {% assign options = block.settings.options | split: ',' %}
+                    <div class="form-group mb-4" {{ block.shopify_attributes }}>
+                        <select 
+                            class="form-select form-select-{{ section.settings.form_fields_size }}"
+                            name="contact[{{ block.settings.label | handleize }}]"
+                            placeholder="{{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}" 
+                            aria-label="{{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}" 
+                            {% if block.settings.required %}required{% endif %}>
+                            <option>
+                                {{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}
+                            </option>
+                            {% for option in options %}
+                                <option value="{{ option | handleize }}">
+                                    {{ option }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% elsif block.type == 'checkbox_radio' %}
+                    {% assign options = block.settings.options | split: ',' %}
+                    <div class="form-group mb-5" {{ block.shopify_attributes }}>
+                        <p class="mb-3 fw-500">
+                            {{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}
+                        </p>
+                        {% for option in options %}
+                            <div class="form-check">
+                                <input 
+                                    id="input-{{ block.id }}-{{ forloop.index }}"
+                                    class="form-check-input" 
+                                    type="{{ block.settings.type }}" 
+                                    name="contact[{{ block.settings.label | handleize }}]">
+                                <label for="input-{{ block.id }}-{{ forloop.index }}" class="form-check-label">
+                                    {{ option }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% elsif block.type == 'range' %}
+                    <div class="form-group mb-4" {{ block.shopify_attributes }}>
+                        <label for="input-{{ block.id }}" class="form-label mb-1">
+                            {{ block.settings.label }} {% unless block.settings.required %}({{ 'general.general.optional' | t }}){% endunless %}
+                        </label>
+                        <div class="d-flex align-items center">
+                            <input 
+                                id="input-{{ block.id }}"
+                                class="form-range" 
+                                type="range" 
+                                name="contact[{{ block.settings.label | handleize }}]"
+                                min="{{ block.settings.min_value }}"
+                                max="{{ block.settings.max_value }}"
+                                step="{{ block.settings.step }}"
+                                {% if block.settings.required %}required{% endif %}
+                                oninput="this.nextElementSibling.value = this.value">
+                                <output class="ms-3">
+                                    {{ block.settings.max_value | divided_by: 2 }}
+                                </output>
+                                /{{ block.settings.max_value }}
+                        </div>
+                    </div>
+                {% elsif block.type == 'submit_btn' %}
+                    <div class="form-group mb-4" {{ block.shopify_attributes }}>
+                        <button 
+                            type="submit" 
+                            class="btn w-100 {{ block.settings.btn_color }} {{ section.settings.form_fields_size | prepend: 'btn-' }}">
+                            {{ block.settings.btn_text }}
+                        </button>
+                    </div>
+                {% elsif block.type == 'separator' %}
+                    {% liquid 
+                        assign mt = block.settings.mt | prepend: 'mt-'
+                        assign mb = block.settings.mb | prepend: 'mb-'
+                    %}
+                    <hr class="{{ mt }} {{ mb }}" style="opacity: {{ block.settings.opacity }};">
+                {% endif %}
+            {% endfor %}
+        {% endform %}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Contact form",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Page max-width (px)",
+            "info": "Prevent section for going to large.",
+            "default": "640"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Contact us"
+        },
+        {
+            "type": "select",
+            "id": "title_size",
+            "label": "Title size",
+            "default": "h2",
+            "options": [
+                { "group": "Heading", "value": "h1", "label": "H1" },
+                { "group": "Heading", "value": "h2", "label": "H2" },
+                { "group": "Heading", "value": "h3", "label": "H3" },
+                { "group": "Heading", "value": "h4", "label": "H4" },
+                { "group": "Heading", "value": "h5", "label": "H5" },
+                { "group": "Heading", "value": "h6", "label": "H6" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description",
+            "default": "<p>Add on optional description to this section</p>"
+        },
+        {
+            "type": "select",
+            "id": "description_size",
+            "label": "Description size",
+            "default": "fs-6",
+            "options": [
+                { "value": "fs-1", "label": "fs-1" },
+                { "value": "fs-2", "label": "fs-2" },
+                { "value": "fs-3", "label": "fs-3" },
+                { "value": "fs-4", "label": "fs-4" },
+                { "value": "fs-5", "label": "fs-5" },
+                { "value": "fs-6", "label": "fs-6" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Form"
+        },
+        {
+            "type": "select",
+            "id": "form_fields_size",
+            "label": "Fields size",
+            "default": "md",
+            "options": [
+                { "value": "sm", "label": "Small" },
+                { "value": "md", "label": "Medium" },
+                { "value": "lg", "label": "Large" }
+            ]
+        },
+        {
+            "type": "richtext",
+            "id": "form_success_msg",
+            "label": "Success Message",
+            "default": "<p>Thanks for contacting us. We'll get back to you as soon as possible.</p>"
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "text",
+            "name": "Text",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Your Title",
+                    "info": "Leave empty to disable"
+                },
+                {
+                    "type": "select",
+                    "id": "title_size",
+                    "label": "Title size",
+                    "default": "h5",
+                    "options": [
+                        { "group": "Heading", "value": "h1", "label": "H1" },
+                        { "group": "Heading", "value": "h2", "label": "H2" },
+                        { "group": "Heading", "value": "h3", "label": "H3" },
+                        { "group": "Heading", "value": "h4", "label": "H4" },
+                        { "group": "Heading", "value": "h5", "label": "H5" },
+                        { "group": "Heading", "value": "h6", "label": "H6" }
+                    ]
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description",
+                    "default": "<p>Write some useful info here</p>",
+                    "info": "Leave empty to disable"
+                },
+                {
+                    "type": "select",
+                    "id": "description_size",
+                    "label": "Description size",
+                    "default": "fs-6",
+                    "options": [
+                        { "value": "fs-1", "label": "fs-1" },
+                        { "value": "fs-2", "label": "fs-2" },
+                        { "value": "fs-3", "label": "fs-3" },
+                        { "value": "fs-4", "label": "fs-4" },
+                        { "value": "fs-5", "label": "fs-5" },
+                        { "value": "fs-6", "label": "fs-6" }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "input_field",
+            "name": "Input field",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "type",
+                    "label": "Type",
+                    "default": "text",
+                    "options": [
+                        { "value": "text", "label": "Text" },
+                        { "value": "email", "label": "Email" },
+                        { "value": "phone", "label": "Phone" },
+                        { "value": "url", "label": "URL" },
+                        { "value": "date", "label": "Date" },
+                        { "value": "time", "label": "Time" }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Your Name"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "required",
+                    "label": "Required",
+                    "default": true,
+                    "info": "If disabled this field will be marked as optional and users can submit the form without having to complete this field."
+                }
+            ]
+        },
+        {
+            "type": "textarea",
+            "name": "Textarea",
+            "settings": [
+                {
+                    "type": "range",
+                    "id": "rows",
+                    "label": "Rows",
+                    "min": 2,
+                    "max": 20,
+                    "step": 1,
+                    "default": 8
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Your Message"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "required",
+                    "label": "Required",
+                    "default": true,
+                    "info": "If disabled this field will be marked as optional and users can submit the form without having to complete this field."
+                }
+            ]
+        },
+        {
+            "type": "select",
+            "name": "Select",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Select City"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "required",
+                    "label": "Required",
+                    "default": true,
+                    "info": "If disabled this field will be marked as optional and users can submit the form without having to complete this field."
+                },
+                {
+                    "type": "html",
+                    "id": "options",
+                    "label": "Options",
+                    "default": "New York, London, Paris",
+                    "info": "Comma separated list of options. E.g: New York, London, Paris"
+                }
+            ]
+        },
+        {
+            "type": "checkbox_radio",
+            "name": "Checkbox/Radio",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "type",
+                    "label": "Type",
+                    "default": "checkbox",
+                    "options": [
+                        { "value": "checkbox", "label": "Checkbox" },
+                        { "value": "radio", "label": "Radio" }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Select City"
+                },
+                {
+                    "type": "html",
+                    "id": "options",
+                    "label": "Options",
+                    "default": "New York, London, Paris",
+                    "info": "Comma separated list of options. E.g: New York, London, Paris"
+                }
+            ]
+        },
+        {
+            "type": "range",
+            "name": "Range",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Label",
+                    "default": "Rate us"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "required",
+                    "label": "Required",
+                    "default": true,
+                    "info": "If disabled this field will be marked as optional and users can submit the form without having to complete this field."
+                },
+                {
+                    "type": "text",
+                    "id": "min_value",
+                    "label": "Min value",
+                    "default": "0"
+                },
+                {
+                    "type": "text",
+                    "id": "max_value",
+                    "label": "Max value",
+                    "default": "10"
+                },
+                {
+                    "type": "text",
+                    "id": "step",
+                    "label": "Step",
+                    "default": "1"
+                }
+            ]
+        },
+        {
+            "type": "submit_btn",
+            "name": "Submit Button",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "btn_text",
+                    "label": "Button text",
+                    "default": "Send"
+                },
+                {
+                    "type": "select",
+                    "id": "btn_color",
+                    "label": "Button color",
+                    "default": "btn-primary",
+                    "options": [
+                        { "group": "Normal", "value": "btn-link", "label": "Link" },
+                        { "group": "Normal", "value": "btn-light", "label": "Light" },
+                        { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                        { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                        { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                        { "group": "Normal", "value": "btn-success", "label": "Success" },
+                        { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                        { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                        { "group": "Normal", "value": "btn-info", "label": "Info" },
+                        { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                        { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                        { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                        { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                        { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                        { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                        { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                        { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "separator",
+            "name": "Separator",
+            "settings": [
+                {
+                    "type": "range",
+                    "id": "opacity",
+                    "label": "Border opacity",
+                    "min": 0,
+                    "max": 1,
+                    "step": 0.1,
+                    "default": 0.1
+                },
+                {
+                    "type": "range",
+                    "id": "mt",
+                    "label": "Margin top",
+                    "min": 0,
+                    "max": 12,
+                    "step": 1,
+                    "default": 6
+                },
+                {
+                    "type": "range",
+                    "id": "mb",
+                    "label": "Margin bottom",
+                    "min": 0,
+                    "max": 12,
+                    "step": 1,
+                    "default": 6
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Contact form",
+            "category": "General",
+            "blocks": [
+                {
+                    "type": "input_field",
+                    "settings": {
+                        "type": "text",
+                        "label": "Your name",
+                        "required": true
+                    }
+                },
+                {
+                    "type": "input_field",
+                    "settings": {
+                        "type": "email",
+                        "label": "Email address",
+                        "required": true
+                    }
+                },
+                {
+                    "type": "input_field",
+                    "settings": {
+                        "type": "phone",
+                        "label": "Phone",
+                        "required": false
+                    }
+                },
+                {
+                    "type": "textarea"
+                },
+                {
+                    "type": "submit_btn"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

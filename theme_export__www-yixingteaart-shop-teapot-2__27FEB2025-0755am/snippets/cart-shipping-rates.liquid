@@ -1,0 +1,91 @@
+{% liquid 
+    if request.page_type == 'cart' 
+        assign show_feature = section.settings.show_shipping_rates
+    else
+        assign show_feature = settings.cart_drawer_show_shipping_rates
+    endif
+%}
+
+{% if show_feature %}
+        
+    <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            new Shopify.CountryProvinceSelector('shipping-rates-modal-country', 'shipping-rates-modal-province', {
+                hideElement: 'shipping-rates-modal-province-wrapper'
+            });
+        })
+    </script>
+
+    <div 
+        id="cart-shipping-rates" 
+        class="mb-2"
+        data-text-no-results="{{ 'cart.shipping_rates.no_results_found' | t }}">
+        <button 
+            class="btn btn-light btn-sm d-flex align-items-center justify-content-start px-5 w-100"
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#cart-shipping-rates-collapse" 
+            aria-expanded="false"
+            aria-controls="cart-shipping-rates-collapse">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-truck me-4" viewBox="0 0 16 16">
+                <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
+            </svg>
+            {{ 'cart.shipping_rates.title' | t }}
+        </button>
+        <div id="cart-shipping-rates-collapse" class="collapse">
+            <div class="pt-4 pb-6">
+                <div id="shipping-rates-modal-alert-danger" class="alert alert-danger" role="alert" hidden>
+                </div>
+                <div id="shipping-rates-modal-alert-warning" class="alert alert-warning" role="alert" hidden>
+                </div>
+                <div id="shipping-rates-modal-alert-success" class="alert alert-success" role="alert" hidden>
+                </div>
+                <div class="form-floating mb-4">
+                    <select 
+                        id="shipping-rates-modal-country"
+                        class="form-select"
+                        autocomplete="country">
+                        {{ all_country_option_tags }}
+                    </select>
+                    <label for="fshipping-rates-modal-country">
+                        {{ 'customer.addresses.country' | t }}
+                    </label>
+                </div>
+                <div
+                    id="shipping-rates-modal-province-wrapper" 
+                    class="form-floating mb-4"
+                    style="display: none;">
+                    <select 
+                        id="shipping-rates-modal-province"
+                        class="form-select"
+                        autocomplete="address-level1">
+                    </select>
+                    <label for="shipping-rates-modal-province">
+                        {{ 'customer.addresses.province' | t }}
+                    </label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input 
+                        id="shipping-rates-modal-zip" 
+                        class="form-control" 
+                        type="text"
+                        placeholder="{{ 'customer.addresses.zip' | t }}"
+                        autocomplete="postal-code">
+                    <label for="shipping-rates-modal-zip">
+                        {{ 'customer.addresses.zip' | t }}
+                    </label>
+                </div>
+                <button 
+                    id="shipping-rates-modal-btn" 
+                    class="btn btn-secondary w-100"
+                    data-text="{{ 'cart.shipping_rates.button_label' | t }}"
+                    onclick="generateShippingRates(this)">
+                    {{ 'cart.shipping_rates.button_label' | t }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+{% endif %}

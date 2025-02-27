@@ -1,0 +1,123 @@
+{% assign description_block = section.blocks | where: 'type', 'product_description' | first %}
+
+{% unless description_block.settings.within_accordion %}
+    <div class="product-description rte mb-7">
+        {{ product.description }}
+    </div>
+{% endunless %}
+    
+<div id="product-accordion" class="accordion mb-5">
+    {% for block in section.blocks %}
+        {% if block.type == 'product_description' or block.type == 'richtext' or block.type == 'size_chart' %}
+            {% unless block.type == 'product_description' and block.settings.within_accordion == false %}
+            {% unless block.type == 'size_chart' and block.settings.within_accordion == false %}
+                <div class="accordion-item">
+                    <h3 id="product-blocks-heading-{{ block.id }}" class="accordion-header mb-0">
+                        <button 
+                            class="accordion-button {% if forloop.index > 1 %}collapsed{% endif %}" 
+                            type="button"
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#product-blocks-collapse-{{ block.id }}" 
+                            aria-expanded="true" 
+                            aria-controls="product-blocks-collapse-{{ block.id }}">
+                            <div class="d-flex align-items-center">
+                                {% if block.type == 'size_chart' %}
+                                    <div class="me-3">
+                                        <svg viewBox="0 0 64 64" width="20" height="20" fill="currentColor">
+                                            <rect class="st0" height="8" width="2" x="7" y="23"/><rect class="st0" height="4" width="2" x="11" y="23"/><rect class="st0" height="4" width="2" x="15" y="23"/><rect class="st0" height="8" width="2" x="19" y="23"/><rect class="st0" height="4" width="2" x="23" y="23"/><rect class="st0" height="4" width="2" x="27" y="23"/><rect class="st0" height="8" width="2" x="31" y="23"/><rect class="st0" height="4" width="2" x="35" y="23"/><rect class="st0" height="4" width="2" x="39" y="23"/><rect class="st0" height="4" width="2" x="47" y="23"/><rect class="st0" height="4" width="2" x="51" y="23"/><rect class="st0" height="8" width="2" x="55" y="23"/><rect class="st0" height="8" width="2" x="43" y="23"/><path class="st0" d="M60,42H4c-1.1,0-2-0.9-2-2V24c0-1.1,0.9-2,2-2h56c1.1,0,2,0.9,2,2v16C62,41.1,61.1,42,60,42z M4,40h56V24H4V40z"/>
+                                        </svg>
+                                    </div>
+                                {% else %}
+                                    {% unless block.settings.accordion_icon == blank %}
+                                        <div class="me-3">
+                                            {{ block.settings.accordion_icon }}
+                                        </div>
+                                    {% endunless %}
+                                {% endif %}
+                                {{ block.settings.title | escape }}
+                            </div>
+                        </button>
+                    </h3>
+                    <div 
+                        id="product-blocks-collapse-{{ block.id }}" 
+                        class="accordion-collapse collapse {% if forloop.index == 1 %}show{% endif %}"
+                        aria-labelledby="product-blocks-heading-{{ block.id }}">
+                        <div class="accordion-body">
+                            {% if block.type == 'product_description' %}
+                                <div class="product-description rte">
+                                    {{ product.description }}
+                                </div>
+                            {% elsif block.type == 'richtext' %}
+                                <div class="description rte">
+                                    {{ block.settings.description }}
+                                </div>
+                            {% elsif block.type == 'size_chart' %}
+                                <div class="size-chart-block d-flex align-items-center mb-5">
+                                    <a
+                                        href="#modal-size-chart" 
+                                        class="flex-shrink-0 text-center d-flex flex-column justify-content-center text-decoration-none me-4 f"
+                                        data-bs-toggle="modal" 
+                                        role="button">
+                                        <img 
+                                            class="img-fluid mb-3"
+                                            src="{{ block.settings.img | image_url: width: 240 }}" 
+                                            alt=" {{ block.settings.img.alt }}"
+                                            width="120"
+                                            height="{{ 120 | divided_by: block.settings.img.aspect_ratio | round }}"
+                                            loading="lazy">
+                                        <span class="btn btn-sm btn-outline-secondary py-1">
+                                            {{ 'product.size_chart_large_img' | t }}
+                                        </span>
+                                    </a>
+                                    {% unless block.settings.description == blank %}
+                                        <div class="rte mb-4">
+                                            {{ block.settings.description }}
+                                        </div>
+                                    {% endunless %}
+                                </div>
+                                {% unless block.settings.page == blank %}
+                                    <div class="size-chart-page">
+                                        {{ block.settings.page.content }}
+                                    </div>
+                                {% endunless %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endunless %}
+            {% endunless %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% assign size_chart_block = section.blocks | where: 'type', 'size_chart' | first %}
+
+{% if size_chart_block and size_chart_block.settings.within_accordion == true %}
+    <div  
+        id="modal-size-chart"
+        class="modal fade" 
+        tabindex="-1" 
+        aria-labelledby="modal-size-chart-img" 
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body p-6">
+                    <button 
+                        type="button" 
+                        class="btn-close position-absolute end-0 top-0 mt-4 me-4" 
+                        data-bs-dismiss="modal" 
+                        aria-label="{{ 'general.accessibility.close' | t }}">
+                    </button>
+                    <img 
+                        id="modal-size-chart-img"
+                        class="img-fluid w-100 h-auto"
+                        src="{{ size_chart_block.settings.img | image_url }}" 
+                        alt=" {{ size_chart_block.settings.img.alt }}"
+                        width="{{ size_chart_block.settings.img.width }}"
+                        height="{{ size_chart_block.settings.img.height }}"
+                        loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

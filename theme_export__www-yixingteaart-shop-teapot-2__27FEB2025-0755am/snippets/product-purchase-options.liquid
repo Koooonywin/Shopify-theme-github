@@ -1,0 +1,85 @@
+{% liquid
+    assign current_variant = product.selected_or_first_available_variant
+    assign current_selling_plan_allocation = current_variant.selected_selling_plan_allocation
+   
+    if current_selling_plan_allocation == nil and current_variant.requires_selling_plan
+        assign current_selling_plan_allocation = current_variant.selling_plan_allocations | first
+    endif
+
+    assign save_percentage = current_variant.price | minus: current_variant.selling_plan_allocations.first.price | times: 100 | divided_by: current_variant.price | round | append: '%'
+%}
+   
+{% if product.selling_plan_groups.size > 0 %}
+   <fieldset id="product-purchase-options" class="mt-n1 mb-5">
+        {% comment %} <input 
+            type="hidden" 
+            name="selling_plan" 
+            value="{{ current_selling_plan_allocation.selling_plan.id | default: '' }}"> {% endcomment %}
+
+        <legend class="visually-hidden">
+            {{ 'product.purchase_options.title' | t }}
+        </legend>
+            {% unless product.requires_selling_plan %}
+                <div class="form-check">
+                    <input 
+                        id="purchase-options-one-time"
+                        class="form-check-input" 
+                        name="purchase_option"
+                        type="radio"
+                        checked>
+                    <label class="form-check-label" for="purchase-options-one-time">
+                        {{ 'product.purchase_options.option_one_time' | t }} 
+                        <b class="ms-2" data-price>
+                            {{ current_variant.price | money }}
+                        </b>
+                    </label>
+                </div>
+            {% endunless %}
+        
+            {% for group in product.selling_plan_groups %}
+                <div class="form-check">
+                    <input 
+                        id="purchase-options-subscription"
+                        class="form-check-input" 
+                        name="purchase_option"
+                        type="radio">
+                    <label class="form-check-label" for="purchase-options-subscription">
+                        {{ 'product.purchase_options.option_subscription' | t }}
+                        <b class="ms-2" data-price>
+                            {{ current_variant.selling_plan_allocations.first.price | money }}
+                        </b>
+                        <small id="purchase-options-subscription-save" class="text-muted">
+                            {{ 'product.purchase_options.option_subscription_save' | t: value: save_percentage }}
+                        </small>
+                    </label>
+                </div>
+                <div id="purchase-delivery-options" class="py-3" hidden>
+                    {% for option in group.options %}
+                         <div class="d-flex">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ms-2 me-3" width="20" height="20" fill="currentColor" class="bi bi-arrow-90deg-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.854 1.146a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L4 2.707V12.5A2.5 2.5 0 0 0 6.5 15h8a.5.5 0 0 0 0-1h-8A1.5 1.5 0 0 1 5 12.5V2.707l3.146 3.147a.5.5 0 1 0 .708-.708l-4-4z"/>
+                            </svg>
+                            <div class="input-group input-group-sm">
+                                <label class="input-group-text" for="purchase-delivery-options-select">
+                                    {{ 'product.purchase_options.option_deliver_every' | t }}
+                                </label>
+                                <select 
+                                    id="purchase-delivery-options-select"
+                                    class="form-select w-auto flex-grow-0 pe-10"
+                                    name="selling_plan"
+                                    data-position="{{ option.position }}"
+                                    disabled>
+                                    {% for value in option.values %}
+                                        <option value="{{ group.selling_plans[forloop.index0].id }}" {% if forloop.first %}selected{% endif %}>
+                                            {{ value }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </fieldset>
+   </fieldset>
+{% endif %}

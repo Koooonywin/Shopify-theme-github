@@ -1,0 +1,245 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+    assign mt = section.settings.mt | prepend: 'mt-'
+    assign mb = section.settings.mb | prepend: 'mb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+%}
+
+<section 
+    id="simple-image-{{ section.id }}" 
+    class="simple-image enter-view {{ bg_color }} {{ pt }} {{ pb }} {{ mt }} {{ mb }}">
+    <div class="{{ section.settings.container }}">
+        <div class="mx-auto" style="max-width: {{ section.settings.max_width }}px;">
+            <div 
+                class="animate__animated animate__faster opacity-0"
+                data-animate-class="animate__fadeIn"
+                style="animation-delay: 0ms">
+                {% if section.settings.image_mobile == blank and section.settings.image_desktop == blank %}
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'bg-light' }}
+                {% else %}
+                    {% unless section.settings.url == blank %}
+                        <a href="{{ section.settings.url }}">
+                    {% endunless %}
+                        <div class="d-lg-none">
+                            <img
+                                class="img-fluid rounded {{ section.settings.img_mobile_thumbnail }}"
+                                src="{{ section.settings.image_mobile.src | image_url: width: section.settings.img_mobile_width, height: section.settings.img_mobile_height, crop: section.settings.img_mobile_crop }}"
+                                alt="{{ section.settings.image_mobile.alt | escape }}"
+                                width="{{ section.settings.img_mobile_width }}"
+                                height="{{ section.settings.img_mobile_height }}"
+                                loading="lazy">
+                        </div>
+                        <div class="d-none d-lg-block">
+                            <img
+                                class="img-fluid rounded {{ section.settings.img_desktop_thumbnail }}"
+                                src="{{ section.settings.image_desktop.src | image_url: width: section.settings.img_desktop_width, height: section.settings.img_desktop_height, crop: section.settings.img_desktop_crop }}"
+                                alt="{{ section.settings.image_desktop.alt | escape }}"
+                                width="{{ section.settings.img_desktop_width }}"
+                                height="{{ section.settings.img_desktop_height }}"
+                                loading="lazy">
+                        </div>
+                    {% unless section.settings.url == blank %}
+                        </a>
+                    {% endunless %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% schema %} 
+{
+    "name": "Image",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "text",
+            "id": "max_width",
+            "label": "Max-width (px)"
+        },
+        {
+            "type": "url",
+            "id": "url",
+            "label": "URL (link)"
+        },
+        {
+            "type": "header",
+            "content": "Image (mobile)"
+        },
+        {
+            "type": "image_picker",
+            "id": "image_mobile",
+            "label": "Image"
+        },
+        {
+            "type": "text",
+            "id": "img_mobile_width",
+            "label": "Image width (px)",
+            "default": "900"
+        },
+        {
+            "type": "text",
+            "id": "img_mobile_height",
+            "label": "Image height (px)",
+            "default": "600"
+        },
+        {
+            "type": "select",
+            "id": "img_mobile_crop",
+            "label": "Image crop",
+            "default": "center",
+            "options": [
+                { "value": "top", "label": "Top" },
+                { "value": "center", "label": "Center" },
+                { "value": "bottom", "label": "Bottom" },
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "img_mobile_thumbnail",
+            "label": "Image thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Image (desktop)"
+        },
+        {
+            "type": "image_picker",
+            "id": "image_desktop",
+            "label": "Image"
+        },
+        {
+            "type": "text",
+            "id": "img_desktop_width",
+            "label": "Image width (px)",
+            "default": "1600"
+        },
+        {
+            "type": "text",
+            "id": "img_desktop_height",
+            "label": "Image height (px)",
+            "default": "900"
+        },
+        {
+            "type": "select",
+            "id": "img_desktop_crop",
+            "label": "Image crop",
+            "default": "center",
+            "options": [
+                { "value": "top", "label": "Top" },
+                { "value": "center", "label": "Center" },
+                { "value": "bottom", "label": "Bottom" },
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+            ]
+        },
+        {
+            "type": "select",
+            "id": "img_desktop_thumbnail",
+            "label": "Image thumbnail",
+            "default": "img-thumbnail",
+            "options": [
+                { "value": "", "label": "None" },
+                { "value": "img-thumbnail", "label": "Thumbnail" }
+            ]
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mt",
+            "label": "Margin top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "mb",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "Image",
+            "category": "Image"
+        }
+    ]
+}
+{% endschema %}

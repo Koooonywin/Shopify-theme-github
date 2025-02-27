@@ -1,0 +1,127 @@
+<ul class="nav nav-links justify-content-center">
+    {% for link in linklists[section.settings.menu_desktop].links %}
+        {% if link.links == blank %}
+        <li class="nav-item">
+            <a
+                class="nav-link rounded {% if link.active %}active{% endif %}" 
+                href="{{ link.url }}"
+                aria-current="{% if link.active %}page{% endif %}">
+                {{ link.title }}
+            </a>
+        </li>
+        {% else %}
+            <li class="nav-item dropdown {% if link.levels > 1 %}position-static{% endif %}">
+                <a 
+                    class="nav-link rounded dropdown-toggle {% if link.child_active %}active{% endif %}" 
+                    href="#"
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                    data-index="{{ forloop.index }}"
+                    role="button">
+                    {{ link.title }}
+                </a>
+                {% if link.levels > 1 %}
+                    <ul class="dropdown-megamenu dropdown-menu row">
+                        {% for child_link in link.links %}
+                            {% if child_link.title contains '.jpg' or child_link.title contains '.png' or child_link.title contains 'product' %}
+                                <li 
+                                    class="col megamenu-col animate__animated animate__faster animate__fadeInRight"
+                                    style="animation-delay: {{ forloop.index0 | times: 100 }}ms">
+                                    <a class="" href="{{ child_link.url }}">
+                                        {% if child_link.title contains 'product' %}
+                                            {% assign product = child_link.object %}
+                                            <img
+                                                src="{{ product.featured_image | image_url: width: 480, height: 360, crop: 'center' }}"
+                                                class="img-fluid mb-3 rounded img-thumbnail"
+                                                alt="{{ product.featured_image.alt }}"
+                                                width="480"
+                                                height="360"
+                                                loading="lazy">
+                                            <h6 class="product-item-title mb-1">
+                                                {{ child_link.title | split: '|' | first }}
+                                            </h6>
+                                            <p class="product-item-price mb-0">
+                                                {% if product.compare_at_price > product.price %}
+                                                    <span class="product-item-price-compare text-muted me-1">
+                                                        <span class="visually-hidden">
+                                                            {{ 'product.price_regular' | t }} &nbsp;
+                                                        </span>
+                                                        <s>{{ product.compare_at_price | money }}</s>
+                                                    </span>
+                                                    <span class="product-item-price-final">
+                                                        <span class="visually-hidden">
+                                                            {{ 'product.price_sale' | t }} &nbsp;
+                                                        </span>
+                                                        {% if product.price_varies %}
+                                                            {{ 'product.price_from' | t }}
+                                                        {% endif %}
+                                                        {{ product.price | money }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="product-item-price-final">
+                                                        {% if product.price_varies %}
+                                                            {{ 'product.price_from' | t }}
+                                                        {% endif %}
+                                                        {{ product.price | money }}
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+                                        {% else %}
+                                            {% assign image = child_link.title | split: '|' | last | strip %}
+                                            <img
+                                                src="{{ image | file_img_url: '480x360', crop: 'center' }}"
+                                                class="img-fluid mb-2 rounded img-thumbnail"
+                                                alt=""
+                                                width="480"
+                                                height="360"
+                                                loading="lazy">
+                                            <span class="">
+                                                {{ child_link.title | split: '|' | first }}
+                                            </span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li 
+                                    class="col animate__animated animate__faster animate__fadeInRight"
+                                    style="animation-delay: {{ forloop.index0 | times: 100 }}ms">
+                                    <h6 id="navbar-childitem-{{ forloop.index }}" class="px-5">
+                                        {{ child_link.title }}
+                                    </h6>
+                                    <ul class="list-unstyled">
+                                        {% for grandchild_link in child_link.links %}
+                                            <li>
+                                                <a 
+                                                    id="navbar-grandchilditem-{{ forloop.index }}" 
+                                                    class="dropdown-item rounded {% if grandchild_link.active %}active{% endif %}" 
+                                                    href="{{ grandchild_link.url }}"
+                                                    aria-current="{% if grandchild_link.active %}page{% endif %}">
+                                                    • {{ grandchild_link.title }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <ul class="dropdown-menu">
+                        {% for child_link in link.links %}
+                            <li>
+                                <a 
+                                    id="navbar-childitem-{{ forloop.index }}" 
+                                    class="dropdown-item {% if child_link.active %}active{% endif %}" 
+                                    href="{{ child_link.url }}"
+                                    aria-current="{% if child_link.active %}page{% endif %}">
+                                    {{ child_link.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+

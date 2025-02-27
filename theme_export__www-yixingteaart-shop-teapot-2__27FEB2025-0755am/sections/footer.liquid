@@ -1,0 +1,477 @@
+{% liquid 
+    assign pt = section.settings.pt | prepend: 'pt-'
+    assign pb = section.settings.pb | prepend: 'pb-'
+
+    assign bg_color = section.settings.bg_color
+
+    if section.settings.bg_gradient
+        assign bg_color = bg_color | append: ' bg-gradient'
+    endif
+
+%}
+
+<footer id="footer" class="{{ bg_color }} {{ pt }} {{ pb }}">
+    <div class="{{ section.settings.container }}">
+        <div id="footer-blocks" class="row mb-10">
+            {% if section.settings.show_about_area %}
+                <div class="col-lg-4">
+                    <div id="footer-about" class="me-xl-10 mb-7 mb-lg-0 rounded {% if section.settings.about_bg_transparent %}bg-transparent{% endif %}">
+                        <a class="navbar-brand mb-2" href="{{ routes.root_url }}">
+                            {% if section.settings.about_logo %}
+                                {% assign logo_height_x2 = section.settings.about_logo_height | times: 2 %}
+                                <img
+                                    class="img-fluid"
+                                    src="{{ section.settings.about_logo | image_url: height: logo_height_x2 }}" 
+                                    alt="{{ shop.name }}"
+                                    width="{{ section.settings.about_logo_height | times: section.settings.about_logo.aspect_ratio | round }}" 
+                                    height="{{ section.settings.about_logo_height }}"
+                                    loading="lazy">
+                            {% else %}
+                                <span class="fs-3">
+                                    {{ shop.name }}
+                                </span>
+                            {% endif %}
+                        </a>
+                        {% unless section.settings.about_description == blank %}
+                            <div class="description rte mb-5 small">
+                                {{ section.settings.about_description }}
+                            </div>
+                        {% endunless %}
+                        {% unless section.settings.about_phone_text == blank %}
+                            <div id="footer-about-phone mb-1">
+                                <a class="rte small d-inline-flex align-items-center" href="{{ section.settings.about_phone_url }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-fill me-3" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                    </svg>
+                                    {{ section.settings.about_phone_text }}
+                                </a>
+                            </div>
+                        {% endunless %}
+                        {% unless section.settings.about_email_text == blank %}
+                            <div id="footer-about-email mb-0">
+                                <a class="rte small d-inline-flex align-items-center" href="{{ section.settings.about_email_url }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope me-3" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                                    </svg>
+                                    {{ section.settings.about_email_text }}
+                                </a>
+                            </div>
+                        {% endunless %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="{% if section.settings.show_about_area %}col-lg-8{% else %}col-lg-12{% endif %}">
+                <ul class="list-unstyled row mb-0">
+                    {% for block in section.blocks %}
+                        <li class="footer-block col-lg" {{ block.shopify_attributes }}>
+                            <a 
+                                class="nav-link h6 collapsed d-lg-none" 
+                                href="#block-collapse-{{ block.id }}"
+                                data-bs-toggle="collapse"
+                                aria-expanded="false" 
+                                aria-controls="block-collapse-{{ block.id }}"
+                                role="button">
+                                {{ block.settings.title }}
+                            </a>
+                            <h3 class="title d-none d-lg-inline-block {{ block.settings.title_size }}">
+                                <span>
+                                    {{ block.settings.title }}
+                                </span>
+                            </h3>
+                            <div id="block-collapse-{{ block.id }}" class="collapse d-lg-block">
+                                <div class="mt-4 mb-6 my-lg-0">
+                                    {% case block.type %}
+                                        {% when 'richtext' %}
+                                            {% unless block.settings.description == blank %}
+                                                <div class="rte mt-2 small">
+                                                    {{ block.settings.description }}
+                                                </div>
+                                            {% endunless %}
+                                            {% unless block.settings.btn_text == blank %}
+                                                <a class="btn mt-6 {{ block.settings.btn_color }} {{ block.settings.btn_size }}" href="{{ block.settings.btn_url }}">
+                                                    {{ block.settings.btn_text }}
+                                                </a>
+                                            {% endunless %}
+                                        {% when 'menu' %}
+                                            <ul class="nav flex-column mb-0">
+                                                {% for link in linklists[block.settings.menu].links %}
+                                                    <li class="nav-item">
+                                                        <a class="nav-link px-0 py-3 py-lg-2" href="{{ link.url }}">
+                                                            {{ link.title }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% when 'mobile_apps' %}
+                                            {% unless block.settings.description == blank %}
+                                                <div class="rte mt-2 mb-5 small">
+                                                    {{ block.settings.description }}
+                                                </div>
+                                            {% endunless %}
+                                            <div class="d-inline-flex flex-lg-column mx-n2">
+                                                {% unless block.settings.ios_url == blank %}
+                                                    <a 
+                                                        class="btn btn-light px-6 py-2 m-2" 
+                                                        href="{{ block.settings.ios_url }}"
+                                                        target="_blank">
+                                                        <img 
+                                                            class="img-fluid"
+                                                            src="{{ 'app-appstore.svg' | asset_url }}"
+                                                            alt="Download it on Apple's Appstore"
+                                                            width="100"
+                                                            height="25"
+                                                            loading="lazy">
+                                                    </a>
+                                                {% endunless %}
+                                                {% unless block.settings.android_url == blank %}
+                                                    <a 
+                                                        class="btn btn-light px-6 py-2 m-2" 
+                                                        href="{{ block.settings.android_url }}"
+                                                        target="_blank">
+                                                        <img 
+                                                            class="img-fluid"
+                                                            src="{{ 'app-playstore.svg' | asset_url }}"
+                                                            alt="Download it on Google's PlayStore"
+                                                            width="100"
+                                                            height="25"
+                                                            loading="lazy">
+                                                    </a>
+                                                {% endunless %}
+                                            </div>
+                                    {% endcase %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="d-none d-lg-block mb-7">
+
+        <div id="footer-copyright" class="small text-center">
+            <div class="row align-items-center">
+                <div class="col-lg-4">
+                    {% if section.settings.show_social_icons %}
+                        <div class="social-icons-wrapper mb-5 mb-lg-0">
+                            <small class="opacity-75 lh-sm">
+                                {{ 'general.general.follow_us' | t }}
+                            </small>
+                            {% render 'social-icons', icon_size: 18 %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 mb-3 mb-lg-0">
+                    <p class="mb-0">
+                        &copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. {{ 'general.general.all_rights_reserved' | t }}
+                    </p>
+                    {% if section.settings.show_powered_by %}
+                        <p class="mb-0">
+                            Powered by <a href="https://www.shopify.com" target="_blank" rel="sponsored">Shopify</a>. 
+                            Theme by <a href="https://www.ecomgraduates.com" target="_blank" rel="sponsored">EcomGraduates LLC</a>
+                        </p>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4">
+                    {% if section.settings.show_payment_icons %}
+                        <div class="payment-icons-wrapper">
+                            {% render 'payment-icons' %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% schema %}
+{
+    "name": "Footer",
+    "settings": [
+        {
+            "type": "select",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "bg-dark text-white",
+            "options": [
+                { "group": "Inherit", "value": "", "label": "Body" },
+                { "group": "Light", "value": "bg-white text-body", "label": "White" },
+                { "group": "Light", "value": "bg-light text-body", "label": "Light" },
+                { "group": "Dark", "value": "bg-primary text-white", "label": "Primary" },
+                { "group": "Dark", "value": "bg-secondary text-white", "label": "Secondary" },
+                { "group": "Dark", "value": "bg-dark text-white", "label": "Dark" },
+                { "group": "Alert", "value": "bg-success text-white", "label": "Success" },
+                { "group": "Alert", "value": "bg-warning text-white", "label": "Warning" },
+                { "group": "Alert", "value": "bg-danger text-white", "label": "Danger" },
+                { "group": "Alert", "value": "bg-info text-white", "label": "Info" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "bg_gradient",
+            "label": "Background gradient",
+            "default": false,
+            "info": "Will not apply to light colors"
+        },
+        {
+            "type": "select",
+            "id": "container",
+            "label": "Container",
+            "default": "container",
+            "options": [
+                { "value": "container", "label": "Container" },
+                { "value": "container-fluid", "label": "Fluid" }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "show_payment_icons",
+            "label": "Show payment icons",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_social_icons",
+            "label": "Show social icons",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_powered_by",
+            "label": "Show Powered by",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "About us area"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_about_area",
+            "label": "Show \"About us\" area",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "about_bg_transparent",
+            "label": "Use transparent background",
+            "default": false
+        },
+        {
+            "type": "image_picker",
+            "id": "about_logo",
+            "label": "Logo"
+        },
+        {
+            "type": "range",
+            "id": "about_logo_height",
+            "label": "Logo height",
+            "min": 20,
+            "max": 100,
+            "step": 2,
+            "default": 40
+        },
+        {
+            "type": "richtext",
+            "id": "about_description",
+            "label": "Description"
+        },
+        {
+            "type": "text",
+            "id": "about_phone_text",
+            "label": "Phone number",
+            "default": "+1-202-555-1234",
+            "info": "Leave empty to disable"
+        },
+        {
+            "type": "url",
+            "id": "about_phone_url",
+            "label": "Phone number link"
+        },
+        {
+            "type": "text",
+            "id": "about_email_text",
+            "label": "Email address",
+            "default": "info@ecomgraduates.com",
+            "info": "Leave empty to disable"
+        },
+        {
+            "type": "url",
+            "id": "about_email_url",
+            "label": "Email address link"
+        },
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "pt",
+            "label": "Padding top",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 11
+        },
+        {
+            "type": "range",
+            "id": "pb",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 20,
+            "step": 1,
+            "default": 6
+        }
+    ],
+    "blocks": [
+        {
+            "type": "richtext",
+            "name": "Richtext",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title"
+                },
+                {
+                    "type": "select",
+                    "id": "title_size",
+                    "label": "Title size",
+                    "default": "h6",
+                    "options": [
+                        { "group": "Heading", "value": "h1", "label": "H1" },
+                        { "group": "Heading", "value": "h2", "label": "H2" },
+                        { "group": "Heading", "value": "h3", "label": "H3" },
+                        { "group": "Heading", "value": "h4", "label": "H4" },
+                        { "group": "Heading", "value": "h5", "label": "H5" },
+                        { "group": "Heading", "value": "h6", "label": "H6" }
+                    ]
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_text",
+                    "label": "Button text",
+                    "info": "Leave empty to disable"
+                },
+                {
+                    "type": "url",
+                    "id": "btn_url",
+                    "label": "Button URL"
+                },
+                {
+                    "type": "select",
+                    "id": "btn_color",
+                    "label": "Button color",
+                    "default": "btn-primary",
+                    "options": [
+                        { "group": "Normal", "value": "btn-link", "label": "Link" },
+                        { "group": "Normal", "value": "btn-light", "label": "Light" },
+                        { "group": "Normal", "value": "btn-dark", "label": "Dark" },
+                        { "group": "Normal", "value": "btn-primary", "label": "Primary" },
+                        { "group": "Normal", "value": "btn-secondary", "label": "Secondary" },
+                        { "group": "Normal", "value": "btn-success", "label": "Success" },
+                        { "group": "Normal", "value": "btn-danger", "label": "Danger" },
+                        { "group": "Normal", "value": "btn-warning", "label": "Warning" },
+                        { "group": "Normal", "value": "btn-info", "label": "Info" },
+                        { "group": "Outline", "value": "btn-outline-light", "label": "Light Outline" },
+                        { "group": "Outline", "value": "btn-outline-dark", "label": "Dark Outline" },
+                        { "group": "Outline", "value": "btn-outline-primary", "label": "Primary Outline" },
+                        { "group": "Outline", "value": "btn-outline-secondary", "label": "Secondary Outline" },
+                        { "group": "Outline", "value": "btn-outline-success", "label": "Success Outline" },
+                        { "group": "Outline", "value": "btn-outline-danger", "label": "Danger Outline" },
+                        { "group": "Outline", "value": "btn-outline-warning", "label": "Warning Outline" },
+                        { "group": "Outline", "value": "btn-outline-info", "label": "Info Outline" }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "btn_size",
+                    "label": "Button size",
+                    "default": "btn-sm",
+                    "options": [
+                        { "value": "btn-sm", "label": "Small" },
+                        { "value": "", "label": "Normal" },
+                        { "value": "btn-lg", "label": "Large" }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "menu",
+            "name": "Menu",
+            "settings": [
+                {
+                    "type": "link_list",
+                    "id": "menu",
+                    "label": "Menu"
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title"
+                },
+                {
+                    "type": "select",
+                    "id": "title_size",
+                    "label": "Title size",
+                    "default": "h6",
+                    "options": [
+                        { "group": "Heading", "value": "h1", "label": "H1" },
+                        { "group": "Heading", "value": "h2", "label": "H2" },
+                        { "group": "Heading", "value": "h3", "label": "H3" },
+                        { "group": "Heading", "value": "h4", "label": "H4" },
+                        { "group": "Heading", "value": "h5", "label": "H5" },
+                        { "group": "Heading", "value": "h6", "label": "H6" }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "mobile_apps",
+            "name": "Mobile apps",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title"
+                },
+                {
+                    "type": "select",
+                    "id": "title_size",
+                    "label": "Title size",
+                    "default": "h6",
+                    "options": [
+                        { "group": "Heading", "value": "h1", "label": "H1" },
+                        { "group": "Heading", "value": "h2", "label": "H2" },
+                        { "group": "Heading", "value": "h3", "label": "H3" },
+                        { "group": "Heading", "value": "h4", "label": "H4" },
+                        { "group": "Heading", "value": "h5", "label": "H5" },
+                        { "group": "Heading", "value": "h6", "label": "H6" }
+                    ]
+                },
+                {
+                    "type": "richtext",
+                    "id": "description",
+                    "label": "Description"
+                },
+                {
+                    "type": "url",
+                    "id": "ios_url",
+                    "label": "iOS AppStore url"
+                },
+                {
+                    "type": "url",
+                    "id": "android_url",
+                    "label": "Android PlayStore Url"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

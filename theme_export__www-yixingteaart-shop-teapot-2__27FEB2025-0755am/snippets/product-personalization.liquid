@@ -1,0 +1,115 @@
+
+{% for block in section.blocks %}
+    {% if block.type == 'personalization' %}
+        <div class="product-personalization-field" data-type="{{ block.settings.type }}">
+            {% case block.settings.type %}
+                {% when 'text' or 'phone' or 'date' or 'file' %}
+                    <div class="mb-5">
+                        <label 
+                            for="product-personalization-{{ block.id }}" 
+                            class="form-label mb-2">
+                            {{ block.settings.label }}
+                        </label>
+                        <input 
+                            id="product-personalization-{{ block.id }}"
+                            name="properties[{{ block.settings.label }}]"
+                            type="{{ block.settings.type }}" 
+                            class="form-control"
+                            placeholder="{{ block.settings.placeholder }}"
+                            maxlength="{{ block.settings.maxlength }}"
+                            {% if block.settings.required %}required{% endif %}>
+                      </div>
+                {% when 'textarea' %}
+                    <div class="mb-5">
+                        <label 
+                            for="product-personalization-{{ block.id }}" 
+                            class="form-label mb-2">
+                            {{ block.settings.label }}
+                        </label>
+                        <textarea 
+                            id="product-personalization-{{ block.id }}"
+                            name="properties[{{ block.settings.label }}]"
+                            type="text" 
+                            class="form-control" 
+                            rows="3"
+                            placeholder="{{ block.settings.placeholder }}"
+                            maxlength="{{ block.settings.maxlength }}"
+                            {% if block.settings.required %}required{% endif %}></textarea>
+                    </div>
+                {% when 'select' %}
+                    {% assign values = block.settings.values | split: ', ' %}
+                    <div class="mb-5">
+                        <label 
+                            for="product-personalization-{{ block.id }}" 
+                            class="form-label mb-2">
+                            {{ block.settings.label }}
+                        </label>
+                        <select 
+                            id="product-personalization-{{ block.id }}"
+                            name="properties[{{ block.settings.label }}]"
+                            class="form-select" 
+                            placeholder="{{ block.settings.placeholder }}"
+                            {% if block.settings.required %}required{% endif %}>
+                            {% for value in values %}
+                                <option value="{{ value }}">
+                                    {{ value }}
+                                </div>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% when 'checkbox' %}
+                    {% assign values = block.settings.values | split: ', ' %}
+                    <input 
+                        name="properties[{{ block.settings.label }}]" 
+                        type="hidden"
+                        value="">
+                    <div class="mb-5">
+                        <h4 class="h6 mb-3">
+                            {{ block.settings.label }}
+                        </h4>
+                        {% for value in values %}
+                            <div class="form-check">
+                                <input 
+                                    id="product-personalization-{{ block.id }}-{{ value | handleize }}"
+                                    class="form-check-input" 
+                                    type="{{ block.settings.type }}" 
+                                    value="{{ value }}">
+                                <label 
+                                    for="product-personalization-{{ block.id }}-{{ value | handleize }}" 
+                                    class="form-check-label">
+                                    {{ value }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% when 'radio' %}
+                    {% assign values = block.settings.values | split: ', ' %}
+                    <div class="mb-5">
+                        <h4 class="h6 mb-3">
+                            {{ block.settings.label }}
+                        </h4>
+                        {% for value in values %}
+                            <div class="form-check">
+                                <input 
+                                    id="product-personalization-{{ block.id }}-{{ value | handleize }}"
+                                    name="properties[{{ block.settings.label }}]" 
+                                    class="form-check-input" 
+                                    type="{{ block.settings.type }}" 
+                                    value="{{ value }}">
+                                <label 
+                                    for="product-personalization-{{ block.id }}-{{ value | handleize }}" 
+                                    class="form-check-label">
+                                    {{ value }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+            {% endcase %}
+            {% unless block.settings.helper_text == blank %}
+                <div class="helper-text rte fst-italic small text-muted mt-n4 mb-5">
+                    {{ block.settings.helper_text }}
+                </div>
+            {% endunless %}
+        </div>
+    {% endif %}
+{% endfor %}
